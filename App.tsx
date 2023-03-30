@@ -1,12 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
+//imports here
 import React from 'react';
-
 import {
   SafeAreaView,
   View,
@@ -14,11 +7,6 @@ import {
 } from 'react-native';
 import Home_Manual from './components/Home_Manual';
 import Home_QRCode from './components/Home_QRCode';
-
-
-
-
-
 
 
 function App(): JSX.Element {

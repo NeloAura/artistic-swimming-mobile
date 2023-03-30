@@ -1,12 +1,44 @@
 import { Center, Heading, NativeBaseProvider } from "native-base";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import WifiManager from "react-native-wifi-reborn";
+import {PermissionsAndroid} from 'react-native';
+import { RNCamera } from 'react-native-camera';
 
 function Home_QRCode() {
   const [ssid, setSSID] = useState("");
   const [password, setPassword] = useState("");
 
+ useEffect(() => {
+    requestCameraPermission();
+  }, []);
+ 
+  
+  async function requestCameraPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'App needs access to your camera',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Camera permission granted');
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+  
+  
+  
   const handleScan = (event: { data: any; }) => {
     const wifiQRCodeData = event.data;
 
@@ -29,7 +61,9 @@ function Home_QRCode() {
       }
 
   };
- 
+
+
+  
   return (
     
     <>
@@ -41,7 +75,7 @@ function Home_QRCode() {
           Scan The QR Code On Desktop
       </Heading>
       
-      <QRCodeScanner onRead={handleScan} />
+      <QRCodeScanner onRead={handleScan} flashMode={RNCamera.Constants.FlashMode.torch}/>
       
       </Center>
       </NativeBaseProvider>
