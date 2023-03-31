@@ -5,7 +5,7 @@ import cors from 'cors';
 import os from 'os';
 
 // Constants
-const PORT = 3001;
+const PORT = 4000;
 const app = express();
 const server = http.createServer(app);
 

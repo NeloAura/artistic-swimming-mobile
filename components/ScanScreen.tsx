@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,13 +6,26 @@ import {
   Linking
 } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera , BarCodeReadEvent} from 'react-native-camera';
+import { RNCamera } from 'react-native-camera';
+import WifiManager from "react-native-wifi-reborn";
 
-function ScanScreen() {
-  const onSuccess = (e: { data: string; }) => {
-    Linking.openURL(e.data).catch(err =>
-      console.error('An error occurred', err)
-    );
+
+const ScanScreen = () => {
+  const [connected, setConnected] = useState(false);
+
+  const onSuccess = async (e: { data: string; }) => {
+    try {
+      const ssidAndPassword = decodeURIComponent(e.data).split(';');
+      const ssid = ssidAndPassword[0];
+      const password = ssidAndPassword[1];
+
+      
+
+      await WifiManager.connectToProtectedSSID(ssid,password,true);
+      setConnected(true);
+    } catch (error) {
+      console.error('An error occurred', error);
+    }
   };
 
   return (
@@ -28,12 +41,14 @@ function ScanScreen() {
       }
       bottomContent={
         <TouchableOpacity style={styles.buttonTouchable}>
-          <Text style={styles.buttonText}>OK. Got it!</Text>
+          <Text style={styles.buttonText}>
+            {connected ? 'Connected to Wi-Fi' : 'OK. Got it!'}
+          </Text>
         </TouchableOpacity>
       }
     />
   );
-}
+};
 
 const styles = StyleSheet.create({
   centerText: {
