@@ -4,10 +4,10 @@ import {
   ScrollView,
 } from 'react-native';
 
-import Grade from './components/Grade';
+import Grade from '../components/Grade';
 
 
-function App(): JSX.Element {
+function GradePage(): JSX.Element {
  
   return (
     
@@ -20,4 +20,4 @@ function App(): JSX.Element {
 
 
 
-export default App;
+export default GradePage;
