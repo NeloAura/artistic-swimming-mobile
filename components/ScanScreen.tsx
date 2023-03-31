@@ -6,23 +6,29 @@ import {
   Linking
 } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera } from 'react-native-camera';
+import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import WifiManager from "react-native-wifi-reborn";
+import { color } from 'native-base/lib/typescript/theme/styled-system';
+import { Button } from 'native-base';
 
 
 const ScanScreen = () => {
   const [connected, setConnected] = useState(false);
 
-  const onSuccess = async (e: { data: string; }) => {
+  const onSuccess = async (event: BarCodeReadEvent) => {
+    const wifiQRCodeData = event.data;
     try {
-      const ssidAndPassword = decodeURIComponent(e.data).split(';');
-      const ssid = ssidAndPassword[0];
-      const password = ssidAndPassword[1];
-
-      
-
-      await WifiManager.connectToProtectedSSID(ssid,password,true);
-      setConnected(true);
+      const ssidMatch = wifiQRCodeData.match(/WIFI:S:([^;]+);/);
+      const passwordMatch = wifiQRCodeData.match(/P:([^;]+)/);
+      if (ssidMatch && passwordMatch) {
+        const ssid =ssidMatch[1];
+        const password =passwordMatch[1];
+        console.log(`SSID: ${ssid}, Password: ${password}`);
+        WifiManager.setEnabled(true);
+        await WifiManager.connectToProtectedSSID(ssid,password,true);
+        setConnected(true);
+        
+      }
     } catch (error) {
       console.error('An error occurred', error);
     }
@@ -31,19 +37,17 @@ const ScanScreen = () => {
   return (
     <QRCodeScanner
       onRead={onSuccess}
-      flashMode={RNCamera.Constants.FlashMode.torch}
+      flashMode={RNCamera.Constants.FlashMode.auto}
       topContent={
         <Text style={styles.centerText}>
-          Go to{' '}
-          <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on
-          your computer and scan the QR code.
+           Scan the QRCode on the Desktop App
         </Text>
       }
       bottomContent={
         <TouchableOpacity style={styles.buttonTouchable}>
-          <Text style={styles.buttonText}>
+          <Button >
             {connected ? 'Connected to Wi-Fi' : 'OK. Got it!'}
-          </Text>
+          </Button>
         </TouchableOpacity>
       }
     />
@@ -55,7 +59,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     padding: 32,
-    color: '#777'
+    fontWeight: '500',
+    color: '#000'
   },
   textBold: {
     fontWeight: '500',

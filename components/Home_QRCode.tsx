@@ -42,7 +42,7 @@ function Home_QRCode() {
   
   
   
-  const handleScan = (event: BarCodeReadEvent) => {
+  const handleScan =  (event: BarCodeReadEvent) => {
     const wifiQRCodeData = event.data;
 
     // Extract the SSID and password from the WiFi QR code data.
@@ -51,6 +51,7 @@ function Home_QRCode() {
       const ssidMatch = wifiQRCodeData.match(/S:([^;]+)/);
       const passwordMatch = wifiQRCodeData.match(/P:([^;]+)/);
       if (ssidMatch && passwordMatch) {
+        WifiManager.setEnabled(true);
         setSSID(ssidMatch[1]);
         setPassword(passwordMatch[1]);
         connectToHotspot(ssid,password)
