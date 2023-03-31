@@ -3,10 +3,10 @@ import React from 'react';
 import {
   ScrollView,
 } from 'react-native';
-import WelcomeScreen from './components/WelcomeScreen';
+import WelcomeScreen from '../components/WelcomeScreen';
 
 
-function App(): JSX.Element {
+function WelcomePage(): JSX.Element {
  
   return (
     
@@ -19,4 +19,4 @@ function App(): JSX.Element {
 
 
 
-export default App;
+export default WelcomePage;

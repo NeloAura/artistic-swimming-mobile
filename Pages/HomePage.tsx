@@ -16,8 +16,7 @@ function HomePage(): JSX.Element {
     <SafeAreaView style={{ flex: 1, height: '100%', width: '100%',  backgroundColor: 'lightblue' }}>
      <ScrollView>
       <View>
-      <Home_QRCode/>
-      <Home_Manual/>
+      
       </View>
       </ScrollView>
     </SafeAreaView>
