@@ -4,6 +4,7 @@ import {
   ScrollView,
 } from 'react-native';
 import WelcomeScreen from './components/WelcomeScreen';
+import Grade from './components/Grade';
 
 
 function App(): JSX.Element {
