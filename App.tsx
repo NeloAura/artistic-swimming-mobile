@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import Home_Manual from './components/Home_Manual';
 import Home_QRCode from './components/Home_QRCode';
+import ScanScreen from './components/ScanScreen';
 
 
 function App(): JSX.Element {
@@ -15,7 +16,7 @@ function App(): JSX.Element {
     <SafeAreaView style={{ flex: 1, height: '100%', width: '100%',  backgroundColor: '#0074D9' }}>
      <ScrollView>
       <View>
-      <Home_QRCode/>
+      <ScanScreen/>
       <Home_Manual/>
       </View>
       </ScrollView>
