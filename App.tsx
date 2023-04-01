@@ -5,15 +5,16 @@ import {
 } from 'react-native';
 
 import Grade from './components/Grade';
+import LoginComp from './components/Login';
 
 
 function App(): JSX.Element {
  
   return (
     
-    <ScrollView>
-      <Grade/>
-    </ScrollView>
+    
+      <LoginComp/>
+   
     
   );
 }
