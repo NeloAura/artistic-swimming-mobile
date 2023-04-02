@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 32,
     fontWeight: '500',
-    color: '#000'
+    color: '#7FDBFF'
   },
   textBold: {
     fontWeight: '500',
