@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  PermissionsAndroid
 } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
@@ -10,9 +11,34 @@ import WifiManager from "react-native-wifi-reborn";
 import { Button , NativeBaseProvider } from 'native-base';
 
 
-const Home_QRCode = () => {
+const ScanScreen = () => {
   const [connected, setConnected] = useState(false);
   
+  useEffect(() => {
+    requestCameraAndLocationPermission();
+  }, []);
+
+  async function requestCameraAndLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      ]);
+      if (
+        granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.CAMERA'] === PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log('Both permissions granted');
+      } else {
+        console.log('One or both permissions denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+
+
   const onSuccess = async (event: BarCodeReadEvent) => {
     const wifiQRCodeData = event.data;
     try {
@@ -60,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     padding: 32,
     fontWeight: '500',
-    color: '#000'
+    color: '#7FDBFF'
   },
   textBold: {
     fontWeight: '500',
@@ -75,4 +101,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home_QRCode;
+export default ScanScreen;
