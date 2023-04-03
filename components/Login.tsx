@@ -1,7 +1,11 @@
 import { Box, Button, Center, FormControl, Heading, Input, VStack } from 'native-base';
 import { NativeBaseProvider } from 'native-base';
+import useSocket from '../utils/useSocket';
 
 const Login = () => {
+   
+  const socket = useSocket();
+
     return(
        <Center flex={1} bg="#7FDBFF">
         <Box safeArea p="2" py="8" w="90%" maxW="290">
