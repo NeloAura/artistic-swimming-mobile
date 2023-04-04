@@ -6,7 +6,9 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import Home_QRCode from '../components/Home_QRCode';
+
+import module from  '../components/Home_QRCode';
+const { Home_QRCode } = module;
 
 
 function HomePage(): JSX.Element {

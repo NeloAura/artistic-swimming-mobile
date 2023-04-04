@@ -1,6 +1,6 @@
 import { Box, Button, Center, FormControl, Heading, Input, VStack } from 'native-base';
 import { NativeBaseProvider } from 'native-base';
-import useSocket from '../utils/useSocket';
+import useSocket from '../utils/useUdp';
 
 const Login = () => {
    

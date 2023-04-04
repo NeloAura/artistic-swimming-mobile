@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,11 +8,20 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import WifiManager from "react-native-wifi-reborn";
 import { Button , NativeBaseProvider } from 'native-base';
+import getServerIpAddress from '../utils/useUdp';
 
+let serverIpAddress = '';
 
 const Home_QRCode = () => {
   const [connected, setConnected] = useState(false);
-  
+  // const [ipAddress, setIpAddress] = useState('');
+
+  // useEffect(() => {
+  //   getServerIpAddress().then((ip) => {
+  //     setIpAddress(ip);
+  //   });
+  // }, []);
+
   const onSuccess = async (event: BarCodeReadEvent) => {
     const wifiQRCodeData = event.data;
     try {
@@ -25,6 +34,18 @@ const Home_QRCode = () => {
         WifiManager.setEnabled(true);
         await WifiManager.connectToProtectedSSID(ssid,password,true);
         setConnected(true);
+        getServerIpAddress()
+  .then(ip => {
+    // Use the IP address to make further requests to the server
+    console.log(ip)
+    serverIpAddress=ip;
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+
+
         
       }
     } catch (error) {
@@ -75,4 +96,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Home_QRCode;
+export default {
+  Home_QRCode,
+  serverIpAddress,
+};
