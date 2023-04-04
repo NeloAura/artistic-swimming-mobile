@@ -37,7 +37,6 @@ const Home_QRCode = () => {
         getServerIpAddress()
   .then(ip => {
     // Use the IP address to make further requests to the server
-    console.log(ip)
     serverIpAddress=ip;
   })
   .catch(error => {
@@ -66,7 +65,7 @@ const Home_QRCode = () => {
         <TouchableOpacity style={styles.buttonTouchable}>
           <NativeBaseProvider>
           <Button >
-            {connected ? 'Connected to Wi-Fi' : 'OK. Got it!'}
+            {connected ? 'Proceed' : 'Waiting to connect..'}
           </Button>
           </NativeBaseProvider>
         </TouchableOpacity>
