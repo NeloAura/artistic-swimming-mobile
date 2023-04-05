@@ -8,21 +8,23 @@ import {
   Dimensions,
   Image,
   PermissionsAndroid
-} from 'react-native';
-// import { RouteProp, NavigationProp } from '@react-navigation/native';
+} from 'react-native'
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type RootStackParamList = {
+  Home_QRCode: undefined;
+  // Add more screens here
+};
+
+type WelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home_QRCode'>;
+
+interface Props {
+  navigation: WelcomeScreenNavigationProp;
+}
 const { width, height } = Dimensions.get('window');
-// type WelcomeScreenRouteProp = RouteProp<RootStackParamList, 'WelcomeScreen'>;
 
-// type WelcomeScreenNavigationProp = NavigationProp<RootStackParamList, 'WelcomeScreen'>;
 
-// type Props = {
-//   route: WelcomeScreenRouteProp;
-//   navigation: WelcomeScreenNavigationProp;
-// };
-// WelcomeScreen: React.FC<Props> = ({ navigation }) =>
-
-const WelcomeScreen = () => {
+const WelcomeScreen = ({ navigation }: Props) => {
 
     useEffect(() => {
         requestCameraAndLocationPermission();
@@ -49,6 +51,7 @@ const WelcomeScreen = () => {
 
   const handleProceed = () => {
     // Navigate to next screen
+     navigation.navigate('Home_QRCode')
     // navigation.navigate('NextScreen');
   };
 
@@ -67,6 +70,8 @@ const WelcomeScreen = () => {
     </ImageBackground>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -93,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   button: {
-    backgroundColor: '#38B6FF',
+    backgroundColor: '#ef4444',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,

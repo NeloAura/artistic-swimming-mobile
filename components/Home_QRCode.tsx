@@ -95,7 +95,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default {
-  Home_QRCode,
-  serverIpAddress,
-};
+export { Home_QRCode, serverIpAddress };
