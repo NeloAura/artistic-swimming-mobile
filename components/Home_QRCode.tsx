@@ -9,18 +9,23 @@ import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import WifiManager from "react-native-wifi-reborn";
 import { Button , NativeBaseProvider } from 'native-base';
 import getServerIpAddress from '../utils/useUdp';
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type RootStackParamList = {
+  Login: undefined;
+  // Add more screens here
+};
+
+type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+
+interface Props {
+  navigation: LoginNavigationProp;
+}
 let serverIpAddress = '';
 
-const Home_QRCode = () => {
+const Home_QRCode = ({ navigation }: Props) => {
   const [connected, setConnected] = useState(false);
-  // const [ipAddress, setIpAddress] = useState('');
-
-  // useEffect(() => {
-  //   getServerIpAddress().then((ip) => {
-  //     setIpAddress(ip);
-  //   });
-  // }, []);
+ 
 
   const onSuccess = async (event: BarCodeReadEvent) => {
     const wifiQRCodeData = event.data;
@@ -38,6 +43,7 @@ const Home_QRCode = () => {
   .then(ip => {
     // Use the IP address to make further requests to the server
     serverIpAddress=ip;
+    navigation.navigate('Login')
   })
   .catch(error => {
     console.error(error);
@@ -65,7 +71,7 @@ const Home_QRCode = () => {
         <TouchableOpacity style={styles.buttonTouchable}>
           <NativeBaseProvider>
           <Button >
-            {connected ? 'Proceed' : 'Waiting to connect..'}
+            {connected ? 'Conected' : 'Waiting to connect..'}
           </Button>
           </NativeBaseProvider>
         </TouchableOpacity>
