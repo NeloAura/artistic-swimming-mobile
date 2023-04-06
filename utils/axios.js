@@ -2,10 +2,11 @@ import axios from 'axios';
 import { serverIpAddress } from  '../components/Home_QRCode.tsx';
 
 const PROTOCOL = "http:";
-const DOMAIN = serverIpAddress;
+const DOMAIN  = serverIpAddress;
+const PORT = ":3001"
 
 const client = axios.create({
-  baseURL: `${PROTOCOL}//${DOMAIN}`
+  baseURL: `${PROTOCOL}//${DOMAIN}${PORT}`
 });
 
 async function http_get(route) {
@@ -62,3 +63,5 @@ async function http_put(route, data) {
     return new RequestResult(error.response.status, error.response.data);
   }
 }
+
+export { http_post,http_get,http_delete,http_put};
