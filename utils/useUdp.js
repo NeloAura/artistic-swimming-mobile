@@ -17,6 +17,7 @@ const getServerIpAddress = () => {
       // If the message is a response to the IP address request, extract the IP address and use it
       if (msg.startsWith('server-ip-address:')) {
         const ip = msg.split(':')[1];
+        
         console.log(`Server IP address: ${ip}`);
         resolve(ip);
         udpClient.close(); // Close the socket
