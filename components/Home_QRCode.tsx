@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -21,6 +21,7 @@ interface Props {
   navigation: LoginNavigationProp;
 }
 let serverIpAddress = '';
+let serverSecretCode ='';
 
 const Home_QRCode = ({ navigation }: Props) => {
   const [connected, setConnected] = useState(false);
@@ -31,14 +32,23 @@ const Home_QRCode = ({ navigation }: Props) => {
     try {
       const ssidMatch = wifiQRCodeData.match(/WIFI:S:([^;]+);/);
       const passwordMatch = wifiQRCodeData.match(/P:([^;]+)/);
+      const ipAddressMatch = wifiQRCodeData.match(/T:IP;P:([^;]+)/);
+      const secretCodeMatch = wifiQRCodeData.match(/T:SECRET;P:([^;]+)/);
       if (ssidMatch && passwordMatch) {
-        const ssid =ssidMatch[1];
-        const password =passwordMatch[1];
+        const ssid = ssidMatch[1];
+        const password = passwordMatch[1];
         console.log(`SSID: ${ssid}, Password: ${password}`);
+        if (ipAddressMatch && secretCodeMatch) {
+          const ipAddress = ipAddressMatch[1];
+          const secretCode = secretCodeMatch[1];
+          console.log(`IP Address: ${ipAddress}, Secret Code: ${secretCode}`);
+          serverIpAddress = ipAddress;
+          serverSecretCode = secretCode;
+        }
         WifiManager.setEnabled(true);
-        await WifiManager.connectToProtectedSSID(ssid,password,true);
+        await WifiManager.connectToProtectedSSID(ssid, password, true);
         setConnected(true);
-        
+        navigation.navigate('Login')
       }
     } catch (error) {
       console.error('An error occurred', error);
@@ -88,4 +98,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export { Home_QRCode, serverIpAddress };
+export { Home_QRCode, serverIpAddress ,serverSecretCode };
