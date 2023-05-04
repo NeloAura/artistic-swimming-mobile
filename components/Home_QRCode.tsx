@@ -8,7 +8,6 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BarCodeReadEvent, RNCamera } from 'react-native-camera';
 import WifiManager from "react-native-wifi-reborn";
 import { Button , NativeBaseProvider } from 'native-base';
-import getServerIpAddress from '../utils/useUdp';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
@@ -39,18 +38,6 @@ const Home_QRCode = ({ navigation }: Props) => {
         WifiManager.setEnabled(true);
         await WifiManager.connectToProtectedSSID(ssid,password,true);
         setConnected(true);
-        getServerIpAddress()
-  .then(ip => {
-    // Use the IP address to make further requests to the server
-    serverIpAddress=ip;
-    navigation.navigate('Login')
-  })
-  .catch(error => {
-    console.error(error);
-  });
-
-
-
         
       }
     } catch (error) {
