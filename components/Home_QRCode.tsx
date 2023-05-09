@@ -7,11 +7,11 @@ import {Button, NativeBaseProvider} from 'native-base';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 type RootStackParamList = {
-  Login: undefined;
+  LoginScreen: undefined;
   // Add more screens here
 };
 
-type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'LoginScreen'>;
 
 interface Props {
   navigation: LoginNavigationProp;
@@ -43,7 +43,7 @@ const Home_QRCode = ({navigation}: Props) => {
         WifiManager.setEnabled(true);
         await WifiManager.connectToProtectedSSID(ssid, password, true);
         setConnected(true);
-        navigation.navigate('Login');
+        navigation.navigate('LoginScreen')
       }
     } catch (error) {
       console.error('An error occurred', error);
