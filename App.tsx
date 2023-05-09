@@ -110,7 +110,7 @@ function App(): JSX.Element {
 
         <Stack.Screen 
          name="LoginScreen"
-         component={LoginScreen} 
+         component={LoginScreen as React.ComponentType<any>} 
          />
 
       </Stack.Navigator>
