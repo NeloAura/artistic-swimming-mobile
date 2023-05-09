@@ -3,13 +3,13 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // import Grade from './components/Grade';
-import LoginComp from './components/Login';
 import {Home_QRCode} from './components/Home_QRCode';
 import WelcomeScreen from './components/WelcomeScreen';
 import Home_Judge from './components/Home_Group';
 import Judge_1 from './components/Judge_1';
 import Judge_2 from './components/Judge_2';
 import Judge_3 from './components/Judge_3';
+import LoginScreen from './components/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -108,8 +108,13 @@ function App(): JSX.Element {
           }}
         />
 
-        <Stack.Screen name="Login" component={LoginComp} />
+        <Stack.Screen 
+         name="LoginScreen"
+         component={LoginScreen} 
+         />
+
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 }
