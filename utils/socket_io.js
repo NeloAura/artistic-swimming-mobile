@@ -8,14 +8,15 @@ const PORT = ":3001";
 const socket = io(`${PROTOCOL}//${DOMAIN}${PORT}`);
 
 function socket_emit(event, data) {
-  return  socket.emit(event, data, );
-}
-
-function socket_on(eventName, callback) {
-  socket.on(eventName, (data) => {
-    console.log(data);
-    callback(data);
+  return new Promise((resolve, reject) => {
+    socket.emit(event, data, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
   });
 }
 
-export { socket_emit , socket_on ,socket}
+export { socket_emit };
