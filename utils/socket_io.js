@@ -19,4 +19,4 @@ function socket_emit(event, data) {
   });
 }
 
-export { socket_emit };
+export { socket_emit , socket };
