@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -7,71 +7,87 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  PermissionsAndroid
-} from 'react-native'
-import { StackNavigationProp } from '@react-navigation/stack';
+  PermissionsAndroid,
+} from 'react-native';
+import {StackNavigationProp} from '@react-navigation/stack';
 
 type RootStackParamList = {
   Home_QRCode: undefined;
-  // Add more screens here
+  Home_Judge: undefined; // Added new screen here
 };
 
-type WelcomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home_QRCode'>;
+type WelcomeScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Home_QRCode'
+>;
 
 interface Props {
   navigation: WelcomeScreenNavigationProp;
 }
-const { width, height } = Dimensions.get('window');
 
+const {width, height} = Dimensions.get('window');
 
-const WelcomeScreen = ({ navigation }: Props) => {
+const WelcomeScreen = ({navigation}: Props) => {
+  useEffect(() => {
+    requestCameraAndLocationPermission();
+  }, []);
 
-    useEffect(() => {
-        requestCameraAndLocationPermission();
-      }, []);
-    
-      async function requestCameraAndLocationPermission() {
-        try {
-          const granted = await PermissionsAndroid.requestMultiple([
-            PermissionsAndroid.PERMISSIONS.CAMERA,
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ]);
-          if (
-            granted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
-            granted['android.permission.CAMERA'] === PermissionsAndroid.RESULTS.GRANTED
-          ) {
-            console.log('Both permissions granted');
-          } else {
-            console.log('One or both permissions denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
+  async function requestCameraAndLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      ]);
+      if (
+        granted['android.permission.ACCESS_FINE_LOCATION'] ===
+          PermissionsAndroid.RESULTS.GRANTED &&
+        granted['android.permission.CAMERA'] ===
+          PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log('Both permissions granted');
+      } else {
+        console.log('One or both permissions denied');
       }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
 
   const handleProceed = () => {
     // Navigate to next screen
-     navigation.navigate('Home_QRCode')
+    navigation.navigate('Home_QRCode');
     // navigation.navigate('NextScreen');
   };
 
+  const handleJudge = () => {
+    // Navigate to Judge screen
+    navigation.navigate('Home_Judge');
+  };
+
   return (
-    <ImageBackground source={require('../assets/images/WelcomeScreen_mobile.png')} style={styles.backgroundImage}>
+    <ImageBackground
+      source={require('../assets/images/WelcomeScreen_mobile.png')}
+      style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={require('../assets/images/WelcomeScreen_mobile.png')} style={styles.logo} resizeMode="contain" />
+          <Image
+            source={require('../assets/images/WelcomeScreen_mobile.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleProceed}>
             <Text style={styles.buttonText}>Proceed To Scan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleJudge}>
+            <Text style={styles.buttonText}>Judge Screen</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -102,8 +118,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    marginTop:100,
-    
+    marginTop: 20,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
