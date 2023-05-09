@@ -38,6 +38,7 @@ const Home_QRCode = ({ navigation }: Props) => {
         const ssid = ssidMatch[1];
         const password = passwordMatch[1];
         console.log(`SSID: ${ssid}, Password: ${password}`);
+        
         if (ipAddressMatch && secretCodeMatch) {
           const ipAddress = ipAddressMatch[1];
           const secretCode = secretCodeMatch[1];
