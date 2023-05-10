@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { serverIpAddress } from  '../components/Home_QRCode.js';
+import { serverIpAddress } from  '../components/Home_QRCode.tsx';
 
 const PROTOCOL = "http:";
 const DOMAIN  = serverIpAddress;

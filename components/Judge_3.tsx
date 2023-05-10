@@ -5,20 +5,16 @@ import {
   NativeBaseProvider,
   FormControl,
   Input,
-  Center,
   WarningOutlineIcon,
   Button,
-  AspectRatio,
   HStack,
   Heading,
-  Image,
   Stack,
   Text,
 } from 'native-base';
 
 export default function Judge_3() {
   const [formData, setData] = React.useState({});
-  const [errors, setErrors] = React.useState({});
 
   const onSubmit = () => {
     console.log('Submitted');
@@ -26,7 +22,7 @@ export default function Judge_3() {
 
   return (
     <NativeBaseProvider>
-<Box alignItems="center">
+      <Box alignItems="center" pt="4">
         <Box //Top Card
           maxW="80"
           rounded="lg"
@@ -45,10 +41,11 @@ export default function Judge_3() {
             backgroundColor: 'gray.50',
           }}>
           <Stack //Textbox
-          p="4" space={3}>
+            p="4"
+            space={3}>
             <Stack space={2}>
               <Heading size="md" ml="-1">
-                The Garden City
+                Lorem Ipsum
               </Heading>
               <Text
                 fontSize="xs"
@@ -61,13 +58,13 @@ export default function Judge_3() {
                 fontWeight="500"
                 ml="-0.5"
                 mt="-1">
-                The Silicon Valley of India.
+                Old Reliable
               </Text>
             </Stack>
             <Text fontWeight="400">
-              Bengaluru (also called Bangalore) is the center of India's
-              high-tech industry. The city is also known for its parks and
-              nightlife.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Nulla
+              facilisi morbi tempus iaculis.
             </Text>
             <HStack
               alignItems="center"
@@ -119,11 +116,3 @@ export default function Judge_3() {
     </NativeBaseProvider>
   );
 }
-
-// function Example() {
-//   return (
-//     <Center flex={1}>
-//       <Home_Judge />
-//     </Center>
-//   );
-// }
