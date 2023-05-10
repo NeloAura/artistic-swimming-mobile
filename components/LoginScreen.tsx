@@ -1,15 +1,17 @@
 import { Box, Button, Center, FormControl, Heading, Input, VStack } from 'native-base';
 import React, { useState , useEffect } from 'react';
 import { NativeBaseProvider } from 'native-base';
-import { serverSecretCode } from  './Home_QRCode.js';
-import { socket, socket_emit } from '../utils/socket_io.js';
+import { serverSecretCode , serverIpAddress } from  './Home_QRCode.tsx';
 import {StackNavigationProp} from '@react-navigation/stack';
-
+import io from 'socket.io-client';
 
 const secret = serverSecretCode;
+const ip = serverIpAddress;
+const socket = io(`http://${ip}:3001}`); // Initialize socket outside of handleLogin function
 
-async function authenticate(username:any, password:any ,secret:any ) {
-  return socket_emit('authenticate-j', { username, password ,secret});
+async function authenticate(username:any, password:any ,secret:any , socket : any ) {
+  console.log(`${secret}-${username}-${password}-${ip}`)
+  return socket.emit('authenticate-j', { username, password ,secret});
 }
 
 type RootStackParamList = {
@@ -25,35 +27,42 @@ interface Props {
   navigation: LoginScreenNavigationProp;
 }
 
-
-
 export default function LoginScreen ({navigation}: Props){
    
   const [authenticated, setAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
-
+  const secret = serverSecretCode;
+  const ip = serverIpAddress;
 
   useEffect(() => {
+    const socket = io(`http://${ip}:3001`);
+
+    socket.on("connect", () => {
+      console.log("Socket connected");
+    });
+
     socket.on("status", (status) => {
       if (status === "200") {
         setAuthenticated(true);
-        console.log("Authentication succesfull")
+        console.log("Authentication successful");
       }
     });
-  }, []);
 
+    return () => {
+      socket.disconnect();
+    };
+  }, [ip]);
 
-  const handleLogin = async () => {
-  
+  const handleLogin = async () => {  
+    const socket = io(`http://${ip}:3001`);
     try {
-     
-      await authenticate(username, password , secret);
-      
-      
+      await authenticate(username, password, secret, socket);
     } catch (error) {
       console.error(error);
+    } finally {
+      socket.disconnect();
     }
   };
  
@@ -65,23 +74,21 @@ export default function LoginScreen ({navigation}: Props){
   if (authenticated) {
     return handleSubmit();
   }
-
   
-    return(
-      <NativeBaseProvider>
-       <Center flex={1} bg="#7FDBFF">
+  return(
+    <NativeBaseProvider>
+      <Center flex={1} bg="#7FDBFF">
         <Box safeArea p="2" py="8" w="90%" maxW="290">
           <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
-          color: "warmGray.50"
-        }}>
+            color: "warmGray.50"
+          }}>
             Welcome Jugde
           </Heading>
           <Heading mt="1" _dark={{
-          color: "warmGray.200"
-        }} color="coolGray.600" fontWeight="medium" size="xs">
+            color: "warmGray.200"
+          }} color="coolGray.600" fontWeight="medium" size="xs">
             Sign in to continue!
           </Heading>
-  
           <VStack space={3} mt="5">
             <FormControl>
               <FormControl.Label>Username</FormControl.Label>
@@ -97,10 +104,6 @@ export default function LoginScreen ({navigation}: Props){
           </VStack>
         </Box>
       </Center>
-      </NativeBaseProvider>
-      )
-    
-  };
-
-  
-
+    </NativeBaseProvider>
+  )
+};

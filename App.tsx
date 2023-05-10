@@ -10,6 +10,7 @@ import Judge_1 from './components/Judge_1';
 import Judge_2 from './components/Judge_2';
 import Judge_3 from './components/Judge_3';
 import LoginScreen from './components/LoginScreen';
+import { NativeBaseProviderProps } from 'native-base';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,7 +111,7 @@ function App(): JSX.Element {
 
         <Stack.Screen 
          name="LoginScreen"
-         component={LoginScreen} 
+         component={LoginScreen as React.ComponentType<NativeBaseProviderProps>} 
          />
 
       </Stack.Navigator>
