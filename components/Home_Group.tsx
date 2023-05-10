@@ -7,7 +7,6 @@ import {
   Badge,
   Flex,
   Pressable,
-  Spacer,
 } from 'native-base';
 import {StackNavigationProp} from '@react-navigation/stack';
 
