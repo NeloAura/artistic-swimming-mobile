@@ -3,13 +3,14 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // import Grade from './components/Grade';
-import {Home_QRCode} from './components/Home_QRCode';
+import {Home_QRCode} from './components/Home_QRCode.tsx';
 import WelcomeScreen from './components/WelcomeScreen';
 import Home_Judge from './components/Home_Group';
 import Judge_1 from './components/Judge_1';
 import Judge_2 from './components/Judge_2';
 import Judge_3 from './components/Judge_3';
 import LoginScreen from './components/LoginScreen';
+import { NativeBaseProviderProps } from 'native-base';
 
 const Stack = createNativeStackNavigator();
 
@@ -110,7 +111,7 @@ function App(): JSX.Element {
 
         <Stack.Screen 
          name="LoginScreen"
-         component={LoginScreen as React.ComponentType<any>} 
+         component={LoginScreen  as React.ComponentType<NativeBaseProviderProps> } 
          />
 
       </Stack.Navigator>

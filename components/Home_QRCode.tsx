@@ -16,8 +16,9 @@ type LoginNavigationProp = StackNavigationProp<RootStackParamList, 'LoginScreen'
 interface Props {
   navigation: LoginNavigationProp;
 }
-let serverIpAddress = '';
-let serverSecretCode = '';
+
+export let serverIpAddress = '';
+export let serverSecretCode = '';
 
 const Home_QRCode = ({navigation}: Props) => {
   const [connected, setConnected] = useState(false);
@@ -91,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {Home_QRCode, serverIpAddress, serverSecretCode};
+export {Home_QRCode};
