@@ -111,7 +111,7 @@ function App(): JSX.Element {
 
         <Stack.Screen 
          name="LoginScreen"
-         component={LoginScreen as React.ComponentType<NativeBaseProviderProps>} 
+         component={LoginScreen  as React.ComponentType<NativeBaseProviderProps> } 
          />
 
       </Stack.Navigator>
