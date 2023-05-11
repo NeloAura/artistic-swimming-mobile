@@ -13,7 +13,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 type RootStackParamList = {
   Home_QRCode: undefined;
-  Home_Judge: undefined; // Added new screen here
+  Home_Events: undefined; // Added new screen here
 };
 
 type WelcomeScreenNavigationProp = StackNavigationProp<
@@ -59,9 +59,9 @@ const WelcomeScreen = ({navigation}: Props) => {
     // navigation.navigate('NextScreen');
   };
 
-  const handleJudge = () => {
+  const handleEvents = () => {
     // Navigate to Judge screen
-    navigation.navigate('Home_Judge');
+    navigation.navigate('Home_Events');
   };
 
   return (
@@ -80,8 +80,8 @@ const WelcomeScreen = ({navigation}: Props) => {
           <TouchableOpacity style={styles.button} onPress={handleProceed}>
             <Text style={styles.buttonText}>Proceed To Scan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleJudge}>
-            <Text style={styles.buttonText}>Judge Screen</Text>
+          <TouchableOpacity style={styles.button} onPress={handleEvents}>
+            <Text style={styles.buttonText}>Events Screen</Text>
           </TouchableOpacity>
         </View>
       </View>

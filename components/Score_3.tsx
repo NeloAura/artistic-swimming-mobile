@@ -13,15 +13,17 @@ import {
   Text,
 } from 'native-base';
 
-export default function Judge_3() {
+export default function Score_3() {
   const [formData, setData] = React.useState({});
+  const [inputValue, setInputValue] = React.useState('');
 
   const onSubmit = () => {
     console.log('Submitted');
+    setInputValue('');
   };
 
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider >
       <Box alignItems="center" pt="4">
         <Box //Top Card
           maxW="80"
@@ -40,14 +42,15 @@ export default function Judge_3() {
           _light={{
             backgroundColor: 'gray.50',
           }}>
-          <Stack //Textbox
+          <Stack
+            alignItems="center" //Textbox
             p="4"
             space={3}>
-            <Stack space={2}>
+            <Stack space={2} alignItems="center">
               <Heading size="md" ml="-1">
-                Lorem Ipsum
+                Participant
               </Heading>
-              <Text
+              <Text 
                 fontSize="xs"
                 _light={{
                   color: 'violet.500',
@@ -58,29 +61,16 @@ export default function Judge_3() {
                 fontWeight="500"
                 ml="-0.5"
                 mt="-1">
-                Old Reliable
+                Justin Vieira
               </Text>
             </Stack>
-            <Text fontWeight="400">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Nulla
-              facilisi morbi tempus iaculis.
+            <Text fontWeight="400" fontSize="8xl" >
+              22
             </Text>
             <HStack
               alignItems="center"
               space={4}
-              justifyContent="space-between">
-              <HStack alignItems="center">
-                <Text
-                  color="coolGray.600"
-                  _dark={{
-                    color: 'warmGray.200',
-                  }}
-                  fontWeight="400">
-                  6 mins ago
-                </Text>
-              </HStack>
-            </HStack>
+              justifyContent="space-between"></HStack>
           </Stack>
         </Box>
       </Box>
@@ -99,7 +89,11 @@ export default function Judge_3() {
               keyboardType="numeric"
               maxLength={2}
               placeholder="0-10"
-              onChangeText={value => setData({...formData, name: value})}
+              onChangeText={value => {
+                setData({...formData, name: value});
+                setInputValue(value);
+              }}
+              value={inputValue}
               width="20%"
               size="2xl"
             />

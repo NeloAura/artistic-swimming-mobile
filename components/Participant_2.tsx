@@ -11,14 +11,12 @@ import {
 import {StackNavigationProp} from '@react-navigation/stack';
 
 type RootStackParamList = {
-  Judge_1: undefined;
-  Judge_2: undefined;
-  Judge_3: undefined; // Added new screen here
+  Score_3: undefined; // Added new screen here
 };
 
 type GroupScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
-  'Judge_1'
+  'Score_3'
 >;
 
 interface Props {
@@ -29,11 +27,11 @@ export default function Home_Judge({navigation}: Props) {
   return (
     <NativeBaseProvider>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
-        <Pressable pt="4" onPress={() => navigation.navigate('Judge_1')}>
-          {({isHovered, isFocused, isPressed}) => {
+        <Pressable pt="4" onPress={() => navigation.navigate('Score_3')}>
+          {({isHovered, isPressed}) => {
             return (
               <Box
-                maxW="96"
+                maxW="196"
                 borderWidth="1"
                 borderColor="coolGray.300"
                 shadow="3"
@@ -61,7 +59,7 @@ export default function Home_Judge({navigation}: Props) {
                     }}
                     variant="solid"
                     rounded="4">
-                    Badge 1
+                    10
                   </Badge>
                 </HStack>
                 <Text
@@ -69,42 +67,21 @@ export default function Home_Judge({navigation}: Props) {
                   mt="3"
                   fontWeight="medium"
                   fontSize="xl">
-                  Group 1
+                  Participant 1
                 </Text>
                 <Text mt="2" fontSize="sm" color="coolGray.700">
-                  Group 1 description
+                  Participant 1 description
                 </Text>
-                <Flex>
-                  {isFocused ? (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      textDecorationLine="underline"
-                      color="darkBlue.600"
-                      alignSelf="flex-start">
-                      Read More
-                    </Text>
-                  ) : (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      color="darkBlue.600">
-                      Read More
-                    </Text>
-                  )}
-                </Flex>
               </Box>
             );
           }}
         </Pressable>
 
-        <Pressable pt="4" onPress={() => navigation.navigate('Judge_2')}>
-          {({isHovered, isFocused, isPressed}) => {
+        <Pressable pt="4" onPress={() => navigation.navigate('Score_3')}>
+          {({isHovered, isPressed}) => {
             return (
               <Box
-                maxW="96"
+                maxW="196"
                 borderWidth="1"
                 borderColor="coolGray.300"
                 shadow="3"
@@ -132,7 +109,7 @@ export default function Home_Judge({navigation}: Props) {
                     }}
                     variant="solid"
                     rounded="4">
-                    Badge 2
+                    22
                   </Badge>
                 </HStack>
                 <Text
@@ -140,42 +117,21 @@ export default function Home_Judge({navigation}: Props) {
                   mt="3"
                   fontWeight="medium"
                   fontSize="xl">
-                  Group 2
+                  Participant 2
                 </Text>
                 <Text mt="2" fontSize="sm" color="coolGray.700">
-                  Group 2 description
+                  Participant 2 description
                 </Text>
-                <Flex>
-                  {isFocused ? (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      textDecorationLine="underline"
-                      color="darkBlue.600"
-                      alignSelf="flex-start">
-                      Read More
-                    </Text>
-                  ) : (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      color="darkBlue.600">
-                      Read More
-                    </Text>
-                  )}
-                </Flex>
               </Box>
             );
           }}
         </Pressable>
 
-        <Pressable pt="4" pb="4" onPress={() => navigation.navigate('Judge_3')}>
-          {({isHovered, isFocused, isPressed}) => {
+        <Pressable pt="4" pb="4" onPress={() => navigation.navigate('Score_3')}>
+          {({isHovered, isPressed}) => {
             return (
               <Box
-                maxW="96"
+                maxW="196"
                 borderWidth="1"
                 borderColor="coolGray.300"
                 shadow="3"
@@ -203,7 +159,7 @@ export default function Home_Judge({navigation}: Props) {
                     }}
                     variant="solid"
                     rounded="4">
-                    Badge 3
+                    35
                   </Badge>
                 </HStack>
                 <Text
@@ -216,27 +172,6 @@ export default function Home_Judge({navigation}: Props) {
                 <Text mt="2" fontSize="sm" color="coolGray.700">
                   Group 3 description
                 </Text>
-                <Flex>
-                  {isFocused ? (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      textDecorationLine="underline"
-                      color="darkBlue.600"
-                      alignSelf="flex-start">
-                      Read More
-                    </Text>
-                  ) : (
-                    <Text
-                      mt="2"
-                      fontSize={12}
-                      fontWeight="medium"
-                      color="darkBlue.600">
-                      Read More
-                    </Text>
-                  )}
-                </Flex>
               </Box>
             );
           }}

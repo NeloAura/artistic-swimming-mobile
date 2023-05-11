@@ -5,12 +5,14 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 // import Grade from './components/Grade';
 import {Home_QRCode} from './components/Home_QRCode.tsx';
 import WelcomeScreen from './components/WelcomeScreen';
-import Home_Judge from './components/Home_Group';
 import Judge_1 from './components/Judge_1';
 import Judge_2 from './components/Judge_2';
-import Judge_3 from './components/Judge_3';
+import Score_3 from './components/Score_3.tsx';
 import LoginScreen from './components/LoginScreen';
-import { NativeBaseProviderProps } from 'native-base';
+import {NativeBaseProviderProps} from 'native-base';
+import Participant_1 from './components/Participant_1.tsx';
+import Home_Events from './components/Home_Events.tsx';
+import Participant_2 from './components/Participant_2.tsx';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,10 +48,10 @@ function App(): JSX.Element {
         />
 
         <Stack.Screen
-          name="Home_Judge"
-          component={Home_Judge}
+          name="Home_Events"
+          component={Home_Events}
           options={{
-            title: 'Judge Screen',
+            title: 'Events',
             headerStyle: {
               backgroundColor: '#36b3c6',
             },
@@ -94,10 +96,10 @@ function App(): JSX.Element {
         />
 
         <Stack.Screen
-          name="Judge_3"
-          component={Judge_3}
+          name="Score_3"
+          component={Score_3}
           options={{
-            title: 'Judge Screen',
+            title: 'Score',
             headerStyle: {
               backgroundColor: '#36b3c6',
             },
@@ -109,13 +111,45 @@ function App(): JSX.Element {
           }}
         />
 
-        <Stack.Screen 
-         name="LoginScreen"
-         component={LoginScreen  as React.ComponentType<NativeBaseProviderProps> } 
-         />
+        <Stack.Screen
+          name="Participant_1"
+          component={Participant_1}
+          options={{
+            title: 'Participants & Group',
+            headerStyle: {
+              backgroundColor: '#36b3c6',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            navigationBarColor: '#36b3c6',
+          }}
+        />
 
+        <Stack.Screen
+          name="Participant_2"
+          component={Participant_2}
+          options={{
+            title: 'Participants & Group',
+            headerStyle: {
+              backgroundColor: '#36b3c6',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            navigationBarColor: '#36b3c6',
+          }}
+        />
+
+        <Stack.Screen
+          name="LoginScreen"
+          component={
+            LoginScreen as React.ComponentType<NativeBaseProviderProps>
+          }
+        />
       </Stack.Navigator>
-
     </NavigationContainer>
   );
 }
