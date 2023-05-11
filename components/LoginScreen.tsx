@@ -14,12 +14,12 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import socket from "../utils/socket";
 
 type RootStackParamList = {
-  Home_Judge: undefined;
+  Home_Events: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
-  'Home_Judge'
+  'Home_Events'
 >;
 
 interface Props {
@@ -29,18 +29,18 @@ interface Props {
 const ip = serverIpAddress;
 const Socket= socket;
 
+
 export default function LoginScreen({navigation}: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
 
   useEffect(() => {
-    Socket.on('connect', () => {
-      console.log('Socket connected');
-    });
+
+    Socket.initializeSocket(ip);
     Socket.on("status", (status:string) => {
       if (status === "200") {
-        navigation.navigate('Home_Judge');
+        navigation.navigate('Home_Events');
         console.log("Authentication succesfull")
       }
     });
