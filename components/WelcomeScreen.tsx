@@ -59,10 +59,10 @@ const WelcomeScreen = ({navigation}: Props) => {
     // navigation.navigate('NextScreen');
   };
 
-  const handleEvents = () => {
-    // Navigate to Judge screen
-    navigation.navigate('Home_Events');
-  };
+  // const handleEvents = () => {
+  //   // Navigate to Judge screen
+  //   navigation.navigate('Home_Events');
+  // };
 
   return (
     <ImageBackground
@@ -76,13 +76,14 @@ const WelcomeScreen = ({navigation}: Props) => {
             resizeMode="contain"
           />
         </View>
+           
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleProceed}>
             <Text style={styles.buttonText}>Proceed To Scan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleEvents}>
+          {/* <TouchableOpacity style={styles.button} onPress={handleEvents}>
             <Text style={styles.buttonText}>Events Screen</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </ImageBackground>
@@ -112,9 +113,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-start',
+    marginTop:300
   },
   button: {
-    backgroundColor: '#ef4444',
+    backgroundColor: '#2D58E9',
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,

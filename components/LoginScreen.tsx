@@ -44,8 +44,7 @@ export default function LoginScreen({navigation}: Props) {
         console.log("Authentication succesfull")
       }
     });
-
-  }, [Socket]);
+  }, []);
 
   const handleLogin = async () => {
     // Perform authentication check here
