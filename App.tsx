@@ -8,7 +8,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import Judge_1 from './components/Judge_1';
 import Judge_2 from './components/Judge_2';
 import Score_3 from './components/Score_3.tsx';
-import LoginScreen from './components/LoginScreen';
+// import LoginScreen from './components/LoginScreen';
 import {NativeBaseProviderProps} from 'native-base';
 import Participant_1 from './components/Participant_1.tsx';
 import Home_Events from './components/Home_Events.tsx';
@@ -143,12 +143,12 @@ function App(): JSX.Element {
           }}
         />
 
-        <Stack.Screen
+        {/* <Stack.Screen
           name="LoginScreen"
           component={
             LoginScreen as React.ComponentType<NativeBaseProviderProps>
           }
-        />
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
