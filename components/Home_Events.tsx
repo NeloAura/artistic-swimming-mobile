@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   NativeBaseProvider,
@@ -8,6 +8,10 @@ import {
   Pressable,
 } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
+import {serverSecretCode} from './Home_QRCode.tsx';
+import { ip } from './Home_QRCode.tsx';
+import socket from "../utils/socket";
+
 
 type RootStackParamList = {
   Participants: undefined; // Added new screen here
@@ -22,35 +26,39 @@ interface Props {
   navigation: GroupScreenNavigationProp;
 }
 
+const fetchEvent = async (judge:any) => {
+  
+  return new Promise((resolve, reject) => {
+    socket.emit("fetch-judge-events", judge); // Pass the converted competition ID to the server
+    socket.on("judgeEvents", (judges:any) => {
+      resolve(judges);
+    });
+    socket.on("connect_error", (error:any) => {
+      reject(error);
+    });
+  });
+};
+
 export default function Home_Events({ navigation }: Props) {
-  const events = [
-    {
-      id: 1,
-      name: 'Event 1',
-      description: 'Event 1 description',
-    },
-    {
-      id: 2,
-      name: 'Event 2',
-      description: 'Event 2 description',
-    },
-    {
-      id: 3,
-      name: 'Event 3',
-      description: 'Event 3 description',
-    },
-    {
-      id: 4,
-      name: 'Event 4',
-      description: 'Event 4 description',
-    },
-    // Add more events as needed
-  ];
+  const [events, setEvents] = React.useState([]);
+  
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const eventsData = await fetchEvent(judge);
+        setEvents(eventsData);
+      } catch (error) {
+        console.error("Error setting events:", error);
+      }
+    };
+
+    fetchEventData();
+  }, [judge]);
 
   return (
     <NativeBaseProvider>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
-        {events.map((event) => (
+        {events.map((event:any) => (
           <Pressable
             key={event.id}
             pt="4"
@@ -93,7 +101,7 @@ export default function Home_Events({ navigation }: Props) {
                     {event.name}
                   </Text>
                   <Text mt="2" fontSize="sm" color="coolGray.700">
-                    {event.description}
+                    {event.type}
                   </Text>
                 </Box>
               );
