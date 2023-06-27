@@ -26,6 +26,11 @@ interface Props {
 }
 
 export default function Home_Judge({navigation}: Props) {
+
+  
+
+
+
   return (
     <NativeBaseProvider>
      

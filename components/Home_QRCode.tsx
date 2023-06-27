@@ -6,6 +6,10 @@ import WifiManager from 'react-native-wifi-reborn';
 import {Button, NativeBaseProvider, Toast} from 'native-base';
 import {StackNavigationProp} from '@react-navigation/stack';
 import socket from '../utils/socket';
+import CryptoJS from "crypto-js";
+// import { env } from 'process';
+
+
 
 type RootStackParamList = {
   Home_Events: undefined;
@@ -24,9 +28,10 @@ interface Props {
 }
 
 export let serverSecretCode = '';
-
 export let ip = '';
 const Socket = socket;
+// const key = env("SECRET_KEY");
+const key = "BBS"
 
 const Home_QRCode = ({navigation}: Props) => {
   const [connected, setConnected] = useState(false);
@@ -92,8 +97,14 @@ const Home_QRCode = ({navigation}: Props) => {
           WifiManager.setEnabled(true);
           await WifiManager.connectToProtectedSSID(ssid, password, true);
           setConnected(true);
+          
+          const decryptedPassword = CryptoJS.AES.decrypt(
+            userPassword,
+            key
+          ).toString(CryptoJS.enc.Utf8);
+
           setTimeout(() => {
-            authenticate(username, userPassword, secretCode);
+            authenticate(username, decryptedPassword, secretCode);
           }, 3000); // Delay of 2 seconds before calling authenticate
         }
       }
