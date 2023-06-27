@@ -12,14 +12,14 @@ import CryptoJS from "crypto-js";
 
 
 type RootStackParamList = {
-  Home_Events: undefined;
+  Home_Events: {judge: string};
   WelcomeScreen: undefined;
   // Add more screens here
 };
 
 type LoginNavigationProp = StackNavigationProp<
   RootStackParamList,
-  'WelcomeScreen'
+  'Home_Events'
 >;
 
 interface Props {
@@ -28,6 +28,7 @@ interface Props {
 
 export let serverSecretCode = '';
 export let ip = '';
+let judge = '';
 const Socket = socket;
 // const key = env("SECRET_KEY");
 const key = "BBS"
@@ -37,12 +38,12 @@ const Home_QRCode = ({navigation}: Props) => {
 
   useEffect(() => {
     Socket.initializeSocket(ip);
-    Socket.on('status', (status: string) => {
-      if (status === '200') {
-        navigation.navigate('Home_Events');
-        console.log('Authentication succesfull');
+    Socket.on("status", (data: any) => {
+      if (data.status === "200") {
+        navigation.navigate('Home_Events',  {judge} ); // Pass username as navigation parameter
+        console.log('Authentication successful');
         showError('Login successful.');
-      } else if (status === '401') {
+      } else if (data.status === '401') {
         navigation.navigate('WelcomeScreen');
         console.log('Authentication failed');
         showError('An error occurred. Please try again.');
@@ -58,6 +59,7 @@ const Home_QRCode = ({navigation}: Props) => {
       password,
       secret,
     });
+    console.log(username, password, secret);
   }
 
   const showError = (message: string) => {
@@ -92,6 +94,7 @@ const Home_QRCode = ({navigation}: Props) => {
           console.log(`IP Address: ${ipAddress}, Secret Code: ${secretCode}`);
           ip = ipAddress;
           serverSecretCode = secretCode;
+          judge = username;
 
           WifiManager.setEnabled(true);
           await WifiManager.connectToProtectedSSID(ssid, password, true);
@@ -104,7 +107,7 @@ const Home_QRCode = ({navigation}: Props) => {
 
           setTimeout(() => {
             authenticate(username, decryptedPassword, secretCode);
-          }, 100); // Delay of 100 milliseconds before calling authenticate
+          }, 1000); // Delay of 100 milliseconds before calling authenticate
         }
       }
     } catch (error) {

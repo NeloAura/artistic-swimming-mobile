@@ -8,8 +8,10 @@ import {
   Pressable,
 } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 type RootStackParamList = {
+  Home_Events: { judge: string }; // Update parameter type for Home_Events
   Participants: undefined; // Added new screen here
 };
 
@@ -20,9 +22,10 @@ type GroupScreenNavigationProp = StackNavigationProp<
 
 interface Props {
   navigation: GroupScreenNavigationProp;
+  route: RouteProp<RootStackParamList, 'Home_Events'>;
 }
 
-export default function Home_Events({ navigation }: Props) {
+export default function Home_Events({ navigation, route }: Props) {
   const events = [
     {
       id: 1,
@@ -46,6 +49,10 @@ export default function Home_Events({ navigation }: Props) {
     },
     // Add more events as needed
   ];
+
+  const { judge } = route.params;
+
+  console.log('username: ', judge);
 
   return (
     <NativeBaseProvider>
