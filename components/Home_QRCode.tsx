@@ -19,8 +19,7 @@ type RootStackParamList = {
 
 type LoginNavigationProp = StackNavigationProp<
   RootStackParamList,
-  'WelcomeScreen',
-  'Home_Events'
+  'WelcomeScreen'
 >;
 
 interface Props {
@@ -105,7 +104,7 @@ const Home_QRCode = ({navigation}: Props) => {
 
           setTimeout(() => {
             authenticate(username, decryptedPassword, secretCode);
-          }, 3000); // Delay of 2 seconds before calling authenticate
+          }, 100); // Delay of 100 milliseconds before calling authenticate
         }
       }
     } catch (error) {

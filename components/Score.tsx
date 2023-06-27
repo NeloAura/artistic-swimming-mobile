@@ -13,7 +13,7 @@ import {
   Text,
 } from 'native-base';
 
-export default function Score_3() {
+export default function Score() {
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
 

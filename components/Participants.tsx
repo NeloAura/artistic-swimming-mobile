@@ -10,55 +10,55 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
-  Participants: undefined; // Added new screen here
+  Score: undefined; // Added new screen here
 };
 
 type GroupScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
-  'Participants'
+  'Score'
 >;
 
 interface Props {
   navigation: GroupScreenNavigationProp;
 }
 
-export default function Home_Events({ navigation }: Props) {
-  const events = [
+export default function Participants({ navigation }: Props) {
+  const participants = [
     {
-      id: 1,
-      name: 'Event 1',
-      description: 'Event 1 description',
+      id: 10,
+      name: 'Participant 1',
+      description: 'Participant 1 description',
     },
     {
-      id: 2,
-      name: 'Event 2',
-      description: 'Event 2 description',
+      id: 22,
+      name: 'Participant 2',
+      description: 'Participant 2 description',
     },
     {
-      id: 3,
-      name: 'Event 3',
-      description: 'Event 3 description',
+      id: 35,
+      name: 'Group 3',
+      description: 'Group 3 description',
     },
     {
-      id: 4,
-      name: 'Event 4',
-      description: 'Event 4 description',
+      id: 45,
+      name: 'Group 4',
+      description: 'Group 4 description',
     },
-    // Add more events as needed
+    // Add more participants as needed
   ];
 
   return (
     <NativeBaseProvider>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
-        {events.map((event) => (
+        {participants.map((participant) => (
           <Pressable
-            key={event.id}
+            key={participant.id}
             pt="4"
-            onPress={() => navigation.navigate('Participants')}>
+            onPress={() => navigation.navigate('Score')}>
             {({ isHovered, isPressed }) => {
               return (
                 <Box
-                  maxW="96"
+                  maxW="196"
                   borderWidth="1"
                   borderColor="coolGray.300"
                   shadow="3"
@@ -86,14 +86,14 @@ export default function Home_Events({ navigation }: Props) {
                       }}
                       variant="solid"
                       rounded="4">
-                      {event.id}
+                      {participant.id}
                     </Badge>
                   </HStack>
                   <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
-                    {event.name}
+                    {participant.name}
                   </Text>
                   <Text mt="2" fontSize="sm" color="coolGray.700">
-                    {event.description}
+                    {participant.description}
                   </Text>
                 </Box>
               );
