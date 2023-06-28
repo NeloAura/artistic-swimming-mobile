@@ -6,6 +6,7 @@ import {
   Text,
   Badge,
   Pressable,
+  
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
 import { ip } from './Home_QRCode';
@@ -15,7 +16,7 @@ import socket from "../utils/socket";
 
 
 
-const fetchParticipants = async (eventId , judge) => {
+const fetchParticipants = async (judge, eventId ) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
     socket.emit("fetch-judge-participants",{judge,eventId ,serverSecretCode});
@@ -29,10 +30,10 @@ const fetchParticipants = async (eventId , judge) => {
   });
 };
 
-const fetchGroups = async (eventId , judge) => {
+const fetchGroups = async (eventId) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("fetch-judge-groups",{judge,eventId ,serverSecretCode});
+    socket.emit("fetch-judge-groups",{eventId ,serverSecretCode});
     socket.on("groupsAndTypeData", (groups) => {
       resolve(groups);
     });
@@ -53,7 +54,11 @@ export default function Participants({ navigation, route }) {
     const fetchParticipantsData = async () => {
       try {
         const participantsData = await fetchParticipants(judge,eventId);
-        setParticipantsData(participantsData);
+        console.log('Fetched p data:', participantsData);
+        const {participants} = participantsData || [];
+        setParticipantsData(participants);
+        
+        
       } catch (error) {
         console.error("Error setting participants:", error);
       }
@@ -65,8 +70,10 @@ export default function Participants({ navigation, route }) {
   useEffect(() => {
     const fetchGroupsData = async () => {
       try {
-        const GroupsData = await fetchGroups(judge,eventId);
-        setGroupsData(GroupsData);
+        const GroupsData = await fetchGroups(eventId);
+        console.log(GroupsData);
+        const {groups} = GroupsData || [];
+        setGroupsData(groups);
       } catch (error) {
         console.error("Error setting groups:", error);
       }
@@ -81,9 +88,9 @@ export default function Participants({ navigation, route }) {
       <HStack flexWrap="wrap" justifyContent="center" space="4">
         {participantsData.map((oneParticipantData) => (
           <Pressable
-            key={oneParticipantData.participant.id}
+            key={oneParticipantData.id}
             pt="4"
-            onPress={() => navigation.navigate('ScoreParticipant', {eventId: eventId, judge: judge, participantId: oneParticipantData.participant.id})}>
+            onPress={() => navigation.navigate('ScoreParticipant', {eventId: eventId, judge: judge, participantId: oneParticipantData.id })}>
             {({ isHovered, isPressed }) => {
               return (
                 <Box
@@ -113,16 +120,17 @@ export default function Participants({ navigation, route }) {
                       _text={{
                         color: 'white',
                       }}
+                      
                       variant="solid"
                       rounded="4">
-                      {oneParticipantData.participant.id}
+                      {oneParticipantData.generatedNumber}
                     </Badge>
                   </HStack>
                   <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
-                    {oneParticipantData.participant.firstName}
+                    {oneParticipantData.firstName}
                   </Text>
                   <Text mt="2" fontSize="sm" color="coolGray.700">
-                    {oneParticipantData.participant.generatedNumber}
+                    {oneParticipantData.country}
                   </Text>
                 </Box>
               );
@@ -134,9 +142,9 @@ export default function Participants({ navigation, route }) {
       <HStack flexWrap="wrap" justifyContent="center" space="4">
         {GroupsData.map((oneGroupData) => (
           <Pressable
-            key={oneGroupData.group.id}
+            key={oneGroupData.id}
             pt="4"
-            onPress={() => navigation.navigate('ScoreGroup', {eventId: eventId, judge: judge, groupId: oneGroupData.group.id})}>
+            onPress={() => navigation.navigate('ScoreGroup', {eventId: eventId, judge: judge, groupId: oneGroupData.id})}>
             {({ isHovered, isPressed }) => {
               return (
                 <Box
@@ -162,21 +170,19 @@ export default function Participants({ navigation, route }) {
                   }}>
                   <HStack alignItems="center">
                     <Badge
-                      colorScheme="darkBlue"
+                      colorScheme="purple"
                       _text={{
                         color: 'white',
                       }}
                       variant="solid"
                       rounded="4">
-                      {oneGroupData.group.id}
+                      {oneGroupData.generatedNumber}
                     </Badge>
                   </HStack>
                   <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
-                    {oneGroupData.group.groupName}
+                    {oneGroupData.groupName}
                   </Text>
-                  <Text mt="2" fontSize="sm" color="coolGray.700">
-                    {oneGroupData.group.generatedNumber}
-                  </Text>
+                 
                 </Box>
               );
             }}

@@ -3,9 +3,10 @@ import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import WifiManager from 'react-native-wifi-reborn';
-import {Button, NativeBaseProvider, Toast} from 'native-base';
+import {Button, NativeBaseProvider} from 'native-base';
 import socket from '../utils/socket';
 import CryptoJS from "crypto-js";
+import  Toast  from 'react-native-toast-message';
 // import { env } from 'process';
 
 
@@ -16,7 +17,7 @@ const Socket = socket;
 // const key = env("SECRET_KEY");
 const key = "BBS"
 
-const Home_QRCode = ({navigation}) => {
+export default function Home_QRCode ({navigation}) {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const Home_QRCode = ({navigation}) => {
       if (status === "200") {
         navigation.navigate('Home_Events',  {judge} ); // Pass username as navigation parameter
         console.log('Authentication successful');
-        showError('Login successful.');
+        showSuccess('Authentication successful');
       } else if (status === '401') {
         navigation.navigate('WelcomeScreen');
         console.log('Authentication failed');
@@ -47,8 +48,23 @@ const Home_QRCode = ({navigation}) => {
 
   const showError = (message) => {
     Toast.show({
-      children: message,
-      duration: 3000,
+      type: 'error',
+      text1: message,
+      position: 'top',
+      visibilityTime: 3000,
+      autoHide: true,
+      backgroundColor: 'red',
+    });
+  };
+
+  const showSuccess = (message) => {
+    Toast.show({
+      type: 'success',
+      text1: message,
+      position: 'top',
+      visibilityTime: 3000,
+      autoHide: true,
+      backgroundColor: '#32CD32', // Custom color
     });
   };
 
@@ -99,6 +115,7 @@ const Home_QRCode = ({navigation}) => {
   };
 
   return (
+    <>
     <QRCodeScanner
       onRead={onSuccess}
       flashMode={RNCamera.Constants.FlashMode.auto}
@@ -115,6 +132,13 @@ const Home_QRCode = ({navigation}) => {
         </TouchableOpacity>
       }
     />
+      <Toast
+        position='top'
+        bottomOffset={20}
+        
+      />
+</>
+    
   );
 };
 
@@ -139,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {Home_QRCode};
+

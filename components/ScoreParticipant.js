@@ -1,4 +1,4 @@
-import React from 'react';
+import React  from 'react';
 import {
   VStack,
   Box,
@@ -15,7 +15,8 @@ import {
 import {serverSecretCode} from './Home_QRCode';
 import { ip } from './Home_QRCode';
 import socket from "../utils/socket";
-
+import Toast  from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
 
 
 const fetchParticipant = async (participantId) => {
@@ -32,6 +33,24 @@ const fetchParticipant = async (participantId) => {
   });
 };
 
+const showError = (message) => {
+  Toast.show({
+    type: 'error',
+    text1: message,
+    visibilityTime: 3000,
+    autoHide: true,
+  });
+};
+
+const showSuccess = (message) => {
+  Toast.show({
+    type: 'success',
+    text1: message,
+    position: 'top',
+    visibilityTime: 3000,
+    autoHide: true,
+  });
+};
 
 
 
@@ -40,11 +59,14 @@ export default function ScoreParticipant({ route }) {
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
   const [participant, setParticipant] = React.useState([]);
+  const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const navigation = useNavigation();
 
   React.useEffect(() => {
     const fetchParticipantData = async () => {
       try {
         const participantData = await fetchParticipant(participantId);
+        console.log(participantData);
         setParticipant(participantData);
       } catch (error) {
         console.error("Error setting participants:", error);
@@ -55,9 +77,39 @@ export default function ScoreParticipant({ route }) {
   }, []);
 
 
+
   const onSubmit = () => {
+    setShowConfirmation(true);
+  };
+
+
+const handleConfirmation = () => {
+    
+    setShowConfirmation(false);
+
+    // Prepare the score data to send to the server
+    const scoreData = parseFloat(inputValue);
+
+    // Validate the score
+    if (isNaN(scoreData) || scoreData < 0 || scoreData > 10) {
+      // Display an error message or take appropriate action
+      setInputValue('');
+      showError('Invalid score');
+      return;
+    }
+
+    // Emit the score data to the server
+    console.log(judge,eventId,participantId,scoreData);
+    socket.emit("add-score",{judge,eventId,participantId,scoreData});
     console.log('Submitted');
-    setInputValue('');
+    // Navigate back to the Participant Screen
+    showSuccess("Score Added")
+    navigation.goBack();
+  };
+
+
+  const cancelConfirmation = () => {
+    setShowConfirmation(false);
   };
 
   return (
@@ -86,7 +138,7 @@ export default function ScoreParticipant({ route }) {
             space={3}>
             <Stack space={2} alignItems="center">
               <Heading size="md" ml="-1">
-                Participant {participantId}//
+                Participant 
               </Heading>
               <Text 
                 fontSize="xs"
@@ -99,7 +151,7 @@ export default function ScoreParticipant({ route }) {
                 fontWeight="500"
                 ml="-0.5"
                 mt="-1">
-                {`${participant.firstName} "" ${participant.lastName}`}`\
+                {`${participant.firstName} ${participant.lastName}`}
               </Text>
             </Stack>
             <Text fontWeight="400" fontSize="8xl" >
@@ -125,7 +177,7 @@ export default function ScoreParticipant({ route }) {
             </FormControl.Label>
             <Input
               keyboardType="numeric"
-              maxLength={2}
+              maxLength={3}
               placeholder="0-10"
               onChangeText={value => {
                 setData({...formData, name: value});
@@ -145,6 +197,48 @@ export default function ScoreParticipant({ route }) {
           </Button>
         </VStack>
       </Box>
+      {showConfirmation && (
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          alignItems="center"
+          justifyContent="center"
+          bg="rgba(0, 0, 0, 0.6)"
+        >
+          <Box
+            bg="white"
+            p={4}
+            rounded="md"
+            shadow={4}
+            width="80%"
+            alignItems="center"
+          >
+            <Heading size="lg" mb={2}>
+              Confirm Score Submission
+            </Heading>
+            <Text mb={4}>Score: {inputValue}</Text>
+            <HStack justifyContent="center">
+              <Button onPress={cancelConfirmation} colorScheme="gray">
+                Cancel
+              </Button>
+              <Button
+                onPress={handleConfirmation}
+                colorScheme="red"
+                ml={2}
+              >
+                Submit
+              </Button>
+            </HStack>
+          </Box>
+        </Box>
+      )}
+      <Toast
+        position='top'
+        bottomOffset={20}
+      />
     </NativeBaseProvider>
   );
 }

@@ -20,8 +20,8 @@ const fetchEvent = async (judge) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
     socket.emit("fetch-judge-events", {judge , serverSecretCode}); // Pass the converted competition ID to the server
-    socket.on("judgeEvents", (judges) => {
-      resolve(judges);
+    socket.on("judgeEvents", (events) => {
+      resolve(events);
     });
     socket.on("connect_error", (error) => {
       reject(error);
@@ -37,7 +37,12 @@ export default function Home_Events({ navigation, route }) {
     const fetchEventData = async () => {
       try {
         const eventsData = await fetchEvent(judge);
-        setEvents(eventsData);
+        console.log('Fetched events data:', eventsData);
+        // Extract the events array from eventsData
+        const extractedEvents = eventsData?.events || [];
+
+        setEvents(extractedEvents);
+        
       } catch (error) {
         console.error("Error setting events:", error);
       }
@@ -88,15 +93,22 @@ export default function Home_Events({ navigation, route }) {
                       }}
                       variant="solid"
                       rounded="4">
-                      {event.id}
+                      {`Time: ${event.startTime}-${event.endTime}`}
                     </Badge>
                   </HStack>
                   <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
                     {event.name}
                   </Text>
-                  <Text mt="2" fontSize="sm" color="coolGray.700">
-                    {event.type}
-                  </Text>
+                  
+                  <Badge
+                      colorScheme="lightBlue"
+                      _text={{
+                        color: 'white',
+                      }}
+                      variant="solid"
+                      rounded="2">
+                      {event.type}
+                  </Badge>
                 </Box>
               );
             }}
