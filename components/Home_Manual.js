@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Alert, TextInput, View } from "react-native";
+import { Alert, View } from "react-native";
 import { Container, VStack, FormControl,  Input, Button, Text , NativeBaseProvider, Center, Box, Heading} from 'native-base';
 import wifi from "react-native-wifi-reborn";
 
@@ -16,7 +16,7 @@ function Home_Manual() {
 
       Alert.alert("Connected to hotspot successfully!");
     } 
-     catch (error: any) {
+     catch (error) {
       Alert.alert("Failed to connect to hotspot:", error.message);
     }
   };

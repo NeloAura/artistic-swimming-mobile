@@ -12,10 +12,48 @@ import {
   Stack,
   Text,
 } from 'native-base';
+import {serverSecretCode} from './Home_QRCode';
+import { ip } from './Home_QRCode';
+import socket from "../utils/socket";
 
-export default function Score() {
+
+
+const fetchParticipant = async (participantId) => {
+  return new Promise((resolve, reject) => {
+    socket.initializeSocket(ip);
+    socket.emit("fetchParticipant",{id:participantId,serverSecretCode});
+    socket.on("participantData", (participant) => {
+      resolve(participant);
+    });
+    socket.on("connect_error", (error) => {
+      reject(error);
+      socket.removeListener();
+    });
+  });
+};
+
+
+
+
+export default function ScoreParticipant({ route }) {
+  const { eventId, judge, participantId } = route.params;
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
+  const [participant, setParticipant] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchParticipantData = async () => {
+      try {
+        const participantData = await fetchParticipant(participantId);
+        setParticipant(participantData);
+      } catch (error) {
+        console.error("Error setting participants:", error);
+      }
+    };
+
+    fetchParticipantData();
+  }, []);
+
 
   const onSubmit = () => {
     console.log('Submitted');
@@ -48,7 +86,7 @@ export default function Score() {
             space={3}>
             <Stack space={2} alignItems="center">
               <Heading size="md" ml="-1">
-                Participant
+                Participant {participantId}//
               </Heading>
               <Text 
                 fontSize="xs"
@@ -61,11 +99,11 @@ export default function Score() {
                 fontWeight="500"
                 ml="-0.5"
                 mt="-1">
-                Justin Vieira
+                {`${participant.firstName} "" ${participant.lastName}`}`\
               </Text>
             </Stack>
             <Text fontWeight="400" fontSize="8xl" >
-              22
+            {participant.generatedNumber}
             </Text>
             <HStack
               alignItems="center"

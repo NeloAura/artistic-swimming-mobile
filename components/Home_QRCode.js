@@ -1,30 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
+import {RNCamera} from 'react-native-camera';
 import WifiManager from 'react-native-wifi-reborn';
 import {Button, NativeBaseProvider, Toast} from 'native-base';
-import {StackNavigationProp} from '@react-navigation/stack';
 import socket from '../utils/socket';
 import CryptoJS from "crypto-js";
 // import { env } from 'process';
 
-
-
-type RootStackParamList = {
-  Home_Events: {judge: string};
-  WelcomeScreen: undefined;
-  // Add more screens here
-};
-
-type LoginNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Home_Events'
->;
-
-interface Props {
-  navigation: LoginNavigationProp;
-}
 
 export let serverSecretCode = '';
 export let ip = '';
@@ -33,17 +16,17 @@ const Socket = socket;
 // const key = env("SECRET_KEY");
 const key = "BBS"
 
-const Home_QRCode = ({navigation}: Props) => {
+const Home_QRCode = ({navigation}) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     Socket.initializeSocket(ip);
-    Socket.on("status", (data: any) => {
-      if (data.status === "200") {
+    Socket.on("status", (status) => {
+      if (status === "200") {
         navigation.navigate('Home_Events',  {judge} ); // Pass username as navigation parameter
         console.log('Authentication successful');
         showError('Login successful.');
-      } else if (data.status === '401') {
+      } else if (status === '401') {
         navigation.navigate('WelcomeScreen');
         console.log('Authentication failed');
         showError('An error occurred. Please try again.');
@@ -52,7 +35,7 @@ const Home_QRCode = ({navigation}: Props) => {
   }, [connected]);
 
   // Authentication
-  async function authenticate(username: any, password: any, secret: any) {
+  async function authenticate(username, password, secret) {
     console.log('Entered authenticate function');
     socket.emit('authenticate-j', {
       username,
@@ -62,14 +45,14 @@ const Home_QRCode = ({navigation}: Props) => {
     console.log(username, password, secret);
   }
 
-  const showError = (message: string) => {
+  const showError = (message) => {
     Toast.show({
       children: message,
       duration: 3000,
     });
   };
 
-  const onSuccess = async (event: BarCodeReadEvent) => {
+  const onSuccess = async (event) => {
     const wifiQRCodeData = event.data;
     try {
       const ssidMatch = wifiQRCodeData.match(/WIFI:S:([^;]+);/);
@@ -107,7 +90,7 @@ const Home_QRCode = ({navigation}: Props) => {
 
           setTimeout(() => {
             authenticate(username, decryptedPassword, secretCode);
-          }, 1000); // Delay of 100 milliseconds before calling authenticate
+          }, 3000); // Delay of 100 milliseconds before calling authenticate
         }
       }
     } catch (error) {

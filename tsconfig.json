@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    // Other compiler options...
-  },
-  "extends": "@tsconfig/react-native/tsconfig.json"
-}

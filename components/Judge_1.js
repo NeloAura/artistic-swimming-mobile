@@ -9,16 +9,14 @@ import {
   Button,
 } from 'native-base';
 
-interface FormData {
-  score?: string;
-}
+
 
 export default function Judge_1() {
   const [formData, setData] = React.useState<FormData>({});
 
   const onSubmit = () => {
     console.log('Submitted', formData.score);
-    setData({score: undefined});
+    setData({ score: undefined });
   };
 
   return (
@@ -34,13 +32,11 @@ export default function Judge_1() {
               Score
             </FormControl.Label>
             <Input
-              keyboardType="decimal-pad"
-              maxLength={3}
+              keyboardType="numeric"
+              maxLength={2}
               placeholder="0-10"
-              onChangeText={value =>
-                setData({...formData, score: value})
-              }
-              value={formData.score}
+              onChangeText={value => setData({...formData, score: Number(value)})}
+              value={formData.score?.toString()}
               width="20%"
               size="2xl"
             />

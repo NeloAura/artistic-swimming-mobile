@@ -9,25 +9,12 @@ import {
   Image,
   PermissionsAndroid,
 } from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
 
-type RootStackParamList = {
-  Home_QRCode: undefined;
-  Home_Events: undefined; // Added new screen here
-};
 
-type WelcomeScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Home_QRCode'
->;
-
-interface Props {
-  navigation: WelcomeScreenNavigationProp;
-}
 
 const {width, height} = Dimensions.get('window');
 
-const WelcomeScreen = ({navigation}: Props) => {
+const WelcomeScreen = ({navigation}) => {
   useEffect(() => {
     requestCameraAndLocationPermission();
   }, []);

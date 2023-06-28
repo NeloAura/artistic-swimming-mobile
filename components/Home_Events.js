@@ -7,42 +7,31 @@ import {
   Badge,
   Pressable,
 } from 'native-base';
-import { StackNavigationProp, route } from '@react-navigation/stack';
-import {serverSecretCode} from './Home_QRCode.tsx';
-import { ip } from './Home_QRCode.tsx';
+import {serverSecretCode} from './Home_QRCode';
+import { ip } from './Home_QRCode';
 import socket from "../utils/socket";
 
 
-type RootStackParamList = {
-  Home_Events: { judge: string }; // Update parameter type for Home_Events
-  Participants: undefined; // Added new screen here
-};
 
-type GroupScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Participants'
->;
 
-interface Props {
-  navigation: GroupScreenNavigationProp;
-  route: RouteProp<RootStackParamList, 'Home_Events'>;
-}
 
-const fetchEvent = async (judge:any) => {
+const fetchEvent = async (judge) => {
   
   return new Promise((resolve, reject) => {
-    socket.emit("fetch-judge-events", judge); // Pass the converted competition ID to the server
-    socket.on("judgeEvents", (judges:any) => {
+    socket.initializeSocket(ip);
+    socket.emit("fetch-judge-events", {judge , serverSecretCode}); // Pass the converted competition ID to the server
+    socket.on("judgeEvents", (judges) => {
       resolve(judges);
     });
-    socket.on("connect_error", (error:any) => {
+    socket.on("connect_error", (error) => {
       reject(error);
     });
   });
 };
 
-export default function Home_Events({ navigation, route }: Props) {
+export default function Home_Events({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
+  const { judge } = route.params;
   
   useEffect(() => {
     const fetchEventData = async () => {
@@ -57,18 +46,17 @@ export default function Home_Events({ navigation, route }: Props) {
     fetchEventData();
   }, [judge]);
 
-  const { judge } = route.params;
 
   console.log('username: ', judge);
 
   return (
     <NativeBaseProvider>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
-        {events.map((event:any) => (
+        {events.map((event) => (
           <Pressable
             key={event.id}
             pt="4"
-            onPress={() => navigation.navigate('Participants')}>
+            onPress={() => navigation.navigate('Participants', { eventId: event.id, judge: judge })}>
             {({ isHovered, isPressed }) => {
               return (
                 <Box
