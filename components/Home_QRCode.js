@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity ,} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import WifiManager from 'react-native-wifi-reborn';
-import {Button, NativeBaseProvider} from 'native-base';
+import {Button, NativeBaseProvider , Box,  Spinner} from 'native-base';
 import socket from '../utils/socket';
 import CryptoJS from "crypto-js";
 import  Toast  from 'react-native-toast-message';
@@ -19,25 +19,31 @@ const key = "BBS"
 
 export default function Home_QRCode ({navigation}) {
   const [connected, setConnected] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     Socket.initializeSocket(ip);
     Socket.on("status", (status) => {
       if (status === "200") {
-        navigation.navigate('Home_Events',  {judge} ); // Pass username as navigation parameter
-        console.log('Authentication successful');
         showSuccess('Authentication successful');
+        setTimeout( ()=>{
+          setIsLoading(false);
+        navigation.navigate('Home_Events',  {judge} ); }
+        ,3000);
+        
       } else if (status === '401') {
-        navigation.navigate('WelcomeScreen');
-        console.log('Authentication failed');
         showError('An error occurred. Please try again.');
+        setTimeout( ()=>{
+          navigation.navigate('WelcomeScreen');}
+          ,3000);
+       
       }
     });
   }, [connected]);
 
   // Authentication
   async function authenticate(username, password, secret) {
-    console.log('Entered authenticate function');
+    
     socket.emit('authenticate-j', {
       username,
       password,
@@ -103,8 +109,9 @@ export default function Home_QRCode ({navigation}) {
             userPassword,
             key
           ).toString(CryptoJS.enc.Utf8);
-
+          
           setTimeout(() => {
+            setIsLoading(true);
             authenticate(username, decryptedPassword, secretCode);
           }, 3000); // Delay of 100 milliseconds before calling authenticate
         }
@@ -115,6 +122,7 @@ export default function Home_QRCode ({navigation}) {
   };
 
   return (
+    <NativeBaseProvider>
     <>
     <QRCodeScanner
       onRead={onSuccess}
@@ -132,12 +140,26 @@ export default function Home_QRCode ({navigation}) {
         </TouchableOpacity>
       }
     />
+    {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          bottom={0}
+          left={0}
+          right={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          justifyContent="center"
+          alignItems="center">
+          <Spinner color="white" />
+        </Box>
+      )}
       <Toast
         position='top'
         bottomOffset={20}
         
       />
 </>
+</NativeBaseProvider>
     
   );
 };

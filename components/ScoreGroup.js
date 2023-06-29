@@ -57,18 +57,19 @@ const showError = (message) => {
   Toast.show({
     type: 'error',
     text1: message,
-    position: 'bottom',
+    position: 'top',
     visibilityTime: 3000,
     autoHide: true,
     backgroundColor: 'red',
   });
 };
 
+
 const showSuccess = (message) => {
   Toast.show({
     type: 'success',
     text1: message,
-    position: 'bottom',
+    position: 'top',
     visibilityTime: 3000,
     autoHide: true,
     backgroundColor: '#32CD32', // Custom color

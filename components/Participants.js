@@ -85,6 +85,23 @@ export default function Participants({ navigation, route }) {
  
   return (
     <NativeBaseProvider>
+    {participantsData.length === 0 && GroupsData.length === 0 ? (
+        <Box flex={1} justifyContent="center" alignItems="center">
+        <Badge
+    variant="solid"
+    colorScheme="blue"
+    p="10"
+    mb="10"
+    borderRadius="lg"
+    borderWidth="5"
+    borderColor="gray.400"
+    
+  >
+    There are currently no participants or groups to score.
+  </Badge>
+        </Box>
+      ) : (
+        <>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
         {participantsData.map((oneParticipantData) => (
           <Pressable
@@ -189,6 +206,8 @@ export default function Participants({ navigation, route }) {
           </Pressable>
         ))}
       </HStack>
+      </>
+      )}
     </NativeBaseProvider>
   );
 }
