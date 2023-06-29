@@ -11,8 +11,8 @@ import {
   Heading,
   Stack,
   Text,
+  Spinner,
 } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
 import {serverSecretCode} from './Home_QRCode';
 import { ip } from './Home_QRCode';
 import socket from "../utils/socket";
@@ -78,13 +78,13 @@ const showSuccess = (message) => {
 
 
 
-export default function ScoreGroup({  route }) {
+export default function ScoreGroup({  route , navigation }) {
   const { eventId, judge, groupId } = route.params;
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
   const [group, setGroup] = React.useState([]);
-  const navigation = useNavigation();
   const [showConfirmation, setShowConfirmation] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     const fetchGroupData = async () => {
@@ -105,34 +105,38 @@ export default function ScoreGroup({  route }) {
     setShowConfirmation(true);
   };
 
-  const handleConfirmation = () => {
-    // Prepare the score data to send to the server
+  const handleConfirmation = async () => {
     setShowConfirmation(false);
+
+    // Prepare the score data to send to the server
     const scoreData = parseFloat(inputValue);
-   
+
     // Validate the score
     if (isNaN(scoreData) || scoreData < 0 || scoreData > 10) {
       // Display an error message or take appropriate action
-      showError('Invalid score');
       setInputValue('');
+      showError('Invalid score');
       return;
     }
-  
-    // Emit the score data to the server
-    const emitScore = async () => {
-      try {
-        const result = await handleSocket(judge,eventId,groupId,scoreData);
-        return result;
-      } catch (error) {
-        console.error("Error setting participants:", error);
-      }
-    };
 
-     emitScore();
-    
-    // Navigate back to the Participant Screen
-    setInputValue('');
-    navigation.goBack();
+    // Show loading screen
+    showSuccess('Score Added');
+    setIsLoading(true);
+
+    setTimeout( async () => {
+      // Emit the score data to the server
+      
+      await handleSocket(judge,eventId,groupId,scoreData);
+
+      // Navigate back to the Participants Screen after emitting the score
+      setIsLoading(false);
+      
+      navigation.navigate('Participants', {
+        eventId: eventId,
+        judge: judge,
+      });
+    } , 3000
+    )
   };
 
   
@@ -265,6 +269,23 @@ export default function ScoreGroup({  route }) {
           </Box>
         </Box>
       )}
+      {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          bottom={0}
+          left={0}
+          right={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          justifyContent="center"
+          alignItems="center">
+          <Spinner color="white" />
+        </Box>
+      )}
+      <Toast
+        position='top'
+        bottomOffset={20}
+      />
     </NativeBaseProvider>
   );
 }

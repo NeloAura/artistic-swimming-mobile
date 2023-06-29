@@ -30,10 +30,10 @@ const fetchParticipants = async (judge, eventId ) => {
   });
 };
 
-const fetchGroups = async (eventId) => {
+const fetchGroups = async (eventId,judge) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("fetch-judge-groups",{eventId ,serverSecretCode});
+    socket.emit("fetch-judge-groups",{ eventId,judge,serverSecretCode});
     socket.on("groupsAndTypeData", (groups) => {
       resolve(groups);
     });
@@ -65,12 +65,12 @@ export default function Participants({ navigation, route }) {
     };
 
     fetchParticipantsData();
-  }, []);
+  }, [eventId, judge , route]);
 
   useEffect(() => {
     const fetchGroupsData = async () => {
       try {
-        const GroupsData = await fetchGroups(eventId);
+        const GroupsData = await fetchGroups( eventId ,judge);
         console.log(GroupsData);
         const {groups} = GroupsData || [];
         setGroupsData(groups);
@@ -80,7 +80,7 @@ export default function Participants({ navigation, route }) {
     };
 
     fetchGroupsData();
-  }, []);
+  }, [judge, eventId , route]);
 
  
   return (

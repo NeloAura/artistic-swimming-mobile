@@ -11,12 +11,13 @@ import {
   Heading,
   Stack,
   Text,
+  Spinner,
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
 import { ip } from './Home_QRCode';
 import socket from "../utils/socket";
 import Toast  from 'react-native-toast-message';
-import { useNavigation } from '@react-navigation/native';
+
 
 
 const fetchParticipant = async (participantId) => {
@@ -32,6 +33,26 @@ const fetchParticipant = async (participantId) => {
     });
   });
 };
+
+const handleSocket = async (judge,eventId,participantId,scoreData ) => {
+  return new Promise((resolve, reject) => {
+    socket.initializeSocket(ip);
+    socket.emit("add-score", {
+      username: judge,
+      eventId: eventId,
+      participantId: participantId,
+      scoreData: scoreData,
+    });
+    socket.on("score-added", (score) => {
+      resolve(score);
+    });
+    socket.on("connect_error", (error) => {
+      reject(error);
+      socket.removeListener();
+    });
+  });
+};
+
 
 const showError = (message) => {
   Toast.show({
@@ -54,13 +75,14 @@ const showSuccess = (message) => {
 
 
 
-export default function ScoreParticipant({ route }) {
+export default function ScoreParticipant({ route , navigation }) {
   const { eventId, judge, participantId } = route.params;
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
   const [participant, setParticipant] = React.useState([]);
   const [showConfirmation, setShowConfirmation] = React.useState(false);
-  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = React.useState(false);
+
 
   React.useEffect(() => {
     const fetchParticipantData = async () => {
@@ -83,8 +105,7 @@ export default function ScoreParticipant({ route }) {
   };
 
 
-const handleConfirmation = () => {
-    
+  const handleConfirmation = async () => {
     setShowConfirmation(false);
 
     // Prepare the score data to send to the server
@@ -98,15 +119,25 @@ const handleConfirmation = () => {
       return;
     }
 
-    // Emit the score data to the server
-    console.log(judge,eventId,participantId,scoreData);
-    socket.emit("add-score",{judge,eventId,participantId,scoreData});
-    console.log('Submitted');
-    // Navigate back to the Participant Screen
-    showSuccess("Score Added")
-    navigation.goBack();
-  };
+    // Show loading screen
+    showSuccess('Score Added');
+    setIsLoading(true);
 
+    setTimeout( async () => {
+      // Emit the score data to the server
+      console.log(judge, eventId, participantId, scoreData);
+      await handleSocket(judge, eventId, participantId, scoreData);
+
+      // Navigate back to the Participants Screen after emitting the score
+      setIsLoading(false);
+      
+      navigation.navigate('Participants', {
+        eventId: eventId,
+        judge: judge,
+      });
+    } , 3000
+    )
+  };
 
   const cancelConfirmation = () => {
     setShowConfirmation(false);
@@ -233,6 +264,19 @@ const handleConfirmation = () => {
               </Button>
             </HStack>
           </Box>
+        </Box>
+      )}
+      {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          bottom={0}
+          left={0}
+          right={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          justifyContent="center"
+          alignItems="center">
+          <Spinner color="white" />
         </Box>
       )}
       <Toast
