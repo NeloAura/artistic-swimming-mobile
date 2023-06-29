@@ -54,6 +54,7 @@ const App = () => {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
+            headerBackVisible: false,
             navigationBarColor: '#36b3c6',
           }}
         />

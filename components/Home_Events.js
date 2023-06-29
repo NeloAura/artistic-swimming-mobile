@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   Box,
   NativeBaseProvider,
@@ -8,56 +8,65 @@ import {
   Pressable,
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
-import { ip } from './Home_QRCode';
-import socket from "../utils/socket";
+import {ip} from './Home_QRCode';
+import socket from '../utils/socket';
+import {BackHandler} from 'react-native';
 
-
-
-
-
-const fetchEvent = async (judge) => {
-  
+const fetchEvent = async judge => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("fetch-judge-events", {judge , serverSecretCode}); // Pass the converted competition ID to the server
-    socket.on("judgeEvents", (judges) => {
+    socket.emit('fetch-judge-events', {judge, serverSecretCode}); // Pass the converted competition ID to the server
+    socket.on('judgeEvents', judges => {
       resolve(judges);
     });
-    socket.on("connect_error", (error) => {
+    socket.on('connect_error', error => {
       reject(error);
     });
   });
 };
 
-export default function Home_Events({ navigation, route }) {
+export default function Home_Events({navigation, route}) {
   const [events, setEvents] = React.useState([]);
-  const { judge } = route.params;
-  
+  const {judge} = route.params;
+
+  useEffect(() => {
+    const disableBackButton = () => true;
+    BackHandler.addEventListener('hardwareBackPress', disableBackButton);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', disableBackButton);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchEventData = async () => {
       try {
         const eventsData = await fetchEvent(judge);
         setEvents(eventsData);
       } catch (error) {
-        console.error("Error setting events:", error);
+        console.error('Error setting events:', error);
       }
     };
 
     fetchEventData();
   }, [judge]);
 
-
   console.log('username: ', judge);
 
   return (
     <NativeBaseProvider>
       <HStack flexWrap="wrap" justifyContent="center" space="4">
-        {events.map((event) => (
+        {events.map(event => (
           <Pressable
             key={event.id}
             pt="4"
-            onPress={() => navigation.navigate('Participants', { eventId: event.id, judge: judge })}>
-            {({ isHovered, isPressed }) => {
+            onPress={() =>
+              navigation.navigate('Participants', {
+                eventId: event.id,
+                judge: judge,
+              })
+            }>
+            {({isHovered, isPressed}) => {
               return (
                 <Box
                   maxW="96"
@@ -91,7 +100,11 @@ export default function Home_Events({ navigation, route }) {
                       {event.id}
                     </Badge>
                   </HStack>
-                  <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
+                  <Text
+                    color="coolGray.800"
+                    mt="3"
+                    fontWeight="medium"
+                    fontSize="xl">
                     {event.name}
                   </Text>
                   <Text mt="2" fontSize="sm" color="coolGray.700">
