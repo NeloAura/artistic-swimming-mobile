@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity ,} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {RNCamera} from 'react-native-camera';
 import WifiManager from 'react-native-wifi-reborn';
-import {Button, NativeBaseProvider, Toast} from 'native-base';
+import {Button, NativeBaseProvider , Box,  Spinner} from 'native-base';
 import socket from '../utils/socket';
 import CryptoJS from "crypto-js";
+import  Toast  from 'react-native-toast-message';
 // import { env } from 'process';
 
 
@@ -16,27 +17,33 @@ const Socket = socket;
 // const key = env("SECRET_KEY");
 const key = "BBS"
 
-const Home_QRCode = ({navigation}) => {
+export default function Home_QRCode ({navigation}) {
   const [connected, setConnected] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   useEffect(() => {
     Socket.initializeSocket(ip);
     Socket.on("status", (status) => {
       if (status === "200") {
-        navigation.navigate('Home_Events',  {judge} ); // Pass username as navigation parameter
-        console.log('Authentication successful');
-        showError('Login successful.');
+        showSuccess('Authentication successful');
+        setTimeout( ()=>{
+          setIsLoading(false);
+        navigation.navigate('Home_Events',  {judge} ); }
+        ,3000);
+        
       } else if (status === '401') {
-        navigation.navigate('WelcomeScreen');
-        console.log('Authentication failed');
         showError('An error occurred. Please try again.');
+        setTimeout( ()=>{
+          navigation.navigate('WelcomeScreen');}
+          ,3000);
+       
       }
     });
   }, [connected]);
 
   // Authentication
   async function authenticate(username, password, secret) {
-    console.log('Entered authenticate function');
+    
     socket.emit('authenticate-j', {
       username,
       password,
@@ -47,8 +54,23 @@ const Home_QRCode = ({navigation}) => {
 
   const showError = (message) => {
     Toast.show({
-      children: message,
-      duration: 3000,
+      type: 'error',
+      text1: message,
+      position: 'top',
+      visibilityTime: 3000,
+      autoHide: true,
+      backgroundColor: 'red',
+    });
+  };
+
+  const showSuccess = (message) => {
+    Toast.show({
+      type: 'success',
+      text1: message,
+      position: 'top',
+      visibilityTime: 3000,
+      autoHide: true,
+      backgroundColor: '#32CD32', // Custom color
     });
   };
 
@@ -87,8 +109,9 @@ const Home_QRCode = ({navigation}) => {
             userPassword,
             key
           ).toString(CryptoJS.enc.Utf8);
-
+          
           setTimeout(() => {
+            setIsLoading(true);
             authenticate(username, decryptedPassword, secretCode);
           }, 3000); // Delay of 100 milliseconds before calling authenticate
         }
@@ -99,6 +122,8 @@ const Home_QRCode = ({navigation}) => {
   };
 
   return (
+    <NativeBaseProvider>
+    <>
     <QRCodeScanner
       onRead={onSuccess}
       flashMode={RNCamera.Constants.FlashMode.auto}
@@ -115,6 +140,27 @@ const Home_QRCode = ({navigation}) => {
         </TouchableOpacity>
       }
     />
+    {isLoading && (
+        <Box
+          position="absolute"
+          top={0}
+          bottom={0}
+          left={0}
+          right={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          justifyContent="center"
+          alignItems="center">
+          <Spinner color="white" />
+        </Box>
+      )}
+      <Toast
+        position='top'
+        bottomOffset={20}
+        
+      />
+</>
+</NativeBaseProvider>
+    
   );
 };
 
@@ -139,4 +185,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {Home_QRCode};
+
