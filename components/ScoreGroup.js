@@ -12,6 +12,7 @@ import {
   Stack,
   Text,
   Spinner,
+  ScrollView
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
 import { ip } from './Home_QRCode';
@@ -34,12 +35,13 @@ const fetchGroup = async (groupId) => {
   });
 };
 
-const handleSocket = async (judge,eventId,groupId,scoreData ) => {
+const handleSocket = async (judge,eventId,judgeType, groupId,scoreData ) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
     socket.emit("add-score-group", {
       judgeUsername: judge,
       eventId: eventId,
+      type:judgeType,
       groupId: groupId,
       scoreData: scoreData,
     });
@@ -80,12 +82,15 @@ const showSuccess = (message) => {
 
 
 export default function ScoreGroup({  route , navigation }) {
-  const { eventId, judge, groupId } = route.params;
+  const { eventId, judge, groupId, eventType } = route.params;
+  const [refreshKey, setRefreshKey] = React.useState(0);
   const [formData, setData] = React.useState({});
   const [inputValue, setInputValue] = React.useState('');
   const [group, setGroup] = React.useState([]);
   const [showConfirmation, setShowConfirmation] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [judgeTypes, setJudgeTypes] = React.useState(eventType);
+  const [judgeType, setJudgeType] = React.useState('');
 
   React.useEffect(() => {
     const fetchGroupData = async () => {
@@ -96,6 +101,8 @@ export default function ScoreGroup({  route , navigation }) {
         console.error("Error setting groups:", error);
       }
     };
+
+    
 
     fetchGroupData();
   }, []);
@@ -109,6 +116,10 @@ export default function ScoreGroup({  route , navigation }) {
   const handleConfirmation = async () => {
     setShowConfirmation(false);
 
+    const refreshPage = async() => {
+      setRefreshKey(prevKey => prevKey + 1); // Update the refresh key to force a refresh
+    };
+    
     // Prepare the score data to send to the server
     const scoreData = parseFloat(inputValue);
 
@@ -124,54 +135,73 @@ export default function ScoreGroup({  route , navigation }) {
     showSuccess('Score Added');
     setIsLoading(true);
 
-    setTimeout( async () => {
+    setTimeout(async () => {
       // Emit the score data to the server
-      
-      await handleSocket(judge,eventId,groupId,scoreData);
+      console.log(judge, eventId, judgeType,  groupId, scoreData);
+      await handleSocket(judge, eventId, judgeType, groupId, scoreData);
 
-      // Navigate back to the Participants Screen after emitting the score
-      setIsLoading(false);
-      
-      navigation.navigate('Participants', {
-        eventId: eventId,
-        judge: judge,
+      // Remove the scored type from judgeTypes
+      // Remove the scored type from judgeTypes
+      const updatedTypes = judgeTypes.filter(type => {
+        // Check if the judge type matches the current type
+        return type.name.toLowerCase() !== judgeType.toLowerCase();
       });
-    } , 3000
-    )
+      setJudgeTypes(updatedTypes);
+
+      // Check if it's the last card
+      if (updatedTypes.length === 0) {
+        // Navigate to the Participants Screen after emitting the score
+        await refreshPage();
+        setIsLoading(false);
+        navigation.navigate('Participants', {
+          eventId: eventId,
+          judge: judge,
+          refreshKey: refreshKey,
+        });
+      }
+      setIsLoading(false);
+      setInputValue('');
+    }, 3000);
   };
+
 
   
   const cancelConfirmation = () => {
     setShowConfirmation(false);
   };
 
+    
 
 
   return (
     <NativeBaseProvider >
+    <ScrollView flex={1} contentContainerStyle={{flexGrow: 1}} mb="10">
+    <VStack flex={1} p={4}>
       <Box alignItems="center" pt="4">
-        <Box //Top Card
-          maxW="80"
-          rounded="lg"
-          overflow="hidden"
-          borderColor="coolGray.200"
-          borderWidth="1"
-          _dark={{
-            borderColor: 'coolGray.600',
-            backgroundColor: 'gray.700',
-          }}
-          _web={{
-            shadow: 2,
-            borderWidth: 0,
-          }}
-          _light={{
-            backgroundColor: 'gray.50',
-          }}>
-          <Stack
-            alignItems="center" //Textbox
-            p="4"
-            space={3}>
-            <Stack space={2} alignItems="center">
+      {judgeTypes.map(type => (
+              <Box
+                key={type.id}
+                maxW="100%"
+                rounded="lg"
+                overflow="hidden"
+                borderColor="coolGray.200"
+                borderWidth="1"
+                mt={2}
+                p={4}
+                _dark={{
+                  borderColor: 'coolGray.600',
+                  backgroundColor: 'gray.700',
+                }}
+                _web={{
+                  shadow: 2,
+                  borderWidth: 0,
+                }}
+                _light={{
+                  backgroundColor: 'gray.50',
+                }}>
+                <Box alignItems="center">
+                  <Stack alignItems="center" p="4" space={3}>
+                  <Stack space={2} alignItems="center">
               <Heading size="md" ml="-1">
                 Group
               </Heading>
@@ -197,40 +227,49 @@ export default function ScoreGroup({  route , navigation }) {
               space={4}
               justifyContent="space-between"></HStack>
           </Stack>
-        </Box>
-      </Box>
-
-      <Box //Form & Button
-        alignItems="center">
-        <VStack>
-          <FormControl isRequired>
-            <FormControl.Label
-              _text={{
-                bold: true,
-              }}>
-              Score
-            </FormControl.Label>
-            <Input
-              keyboardType="numeric"
-              maxLength={3}
-              placeholder="0-10"
-              onChangeText={value => {
-                setData({...formData, name: value});
-                setInputValue(value);
-              }}
-              value={inputValue}
-              width="20%"
-              size="2xl"
-            />
-            <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
-              Error encountered.
-            </FormControl.ErrorMessage>
-          </FormControl>
-          <Button onPress={onSubmit} mt="5" colorScheme="red">
-            Submit
-          </Button>
-        </VStack>
+                  <Text
+                    fontSize="md"
+                    _light={{
+                      color: 'violet.500',
+                    }}
+                    _dark={{
+                      color: 'violet.400',
+                    }}
+                    fontWeight="500"
+                    ml="-0.5"
+                    mt="-1">
+                    {type.name}
+                  </Text>
+                  <VStack>
+                    <FormControl isRequired>
+                      <FormControl.Label _text={{bold: true}}>
+                        Score
+                      </FormControl.Label>
+                      <Input
+                        keyboardType="numeric"
+                        maxLength={3}
+                        placeholder="0-10"
+                        onChangeText={value => {
+                          setData({...formData, name: value});
+                          setInputValue(value);
+                          setJudgeType(type.name);
+                        }}
+                        value={inputValue}
+                        width="75%"
+                        size="2xl"
+                      />
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}>
+                        Error encountered.
+                      </FormControl.ErrorMessage>
+                    </FormControl>
+                    <Button onPress={onSubmit} mt="5" colorScheme="red">
+                      Submit
+                    </Button>
+                  </VStack>
+                </Box>
+              </Box>
+            ))}
       </Box>
       {showConfirmation && (
         <Box
@@ -287,6 +326,8 @@ export default function ScoreGroup({  route , navigation }) {
         position='top'
         bottomOffset={20}
       />
+      </VStack>
+      </ScrollView>
     </NativeBaseProvider>
   );
 }

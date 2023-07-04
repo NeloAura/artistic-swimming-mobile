@@ -53,12 +53,12 @@ const WelcomeScreen = ({navigation}) => {
 
   return (
     <ImageBackground
-      source={require('../assets/images/WelcomeScreen_mobile.png')}
+      source={require('../assets/images/WelcomeScreen.png')}
       style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/images/WelcomeScreen_mobile.png')}
+            source={require('../assets/images/WelcomeScreen.png')}
             style={styles.logo}
             resizeMode="contain"
           />

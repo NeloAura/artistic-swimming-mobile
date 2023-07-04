@@ -6,6 +6,7 @@ import {
   Text,
   Badge,
   Pressable,
+  ScrollView,
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
 import {ip} from './Home_QRCode';
@@ -51,6 +52,7 @@ export default function Home_Events({navigation, route}) {
       } catch (error) {
         console.error('Error setting events:', error);
       }
+
     };
 
     fetchEventData();
@@ -60,6 +62,7 @@ export default function Home_Events({navigation, route}) {
 
   return (
     <NativeBaseProvider>
+     <ScrollView flex={1} contentContainerStyle={{flexGrow: 1}} mb="20">
       <HStack flexWrap="wrap" justifyContent="center" space="4">
         {events.map(event => (
           <Pressable
@@ -128,6 +131,7 @@ export default function Home_Events({navigation, route}) {
           </Pressable>
         ))}
       </HStack>
+      </ScrollView>
     </NativeBaseProvider>
   );
 }

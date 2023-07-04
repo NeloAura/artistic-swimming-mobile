@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   VStack,
   Box,
@@ -12,49 +12,54 @@ import {
   Stack,
   Text,
   Spinner,
+  ScrollView,
 } from 'native-base';
 import {serverSecretCode} from './Home_QRCode';
-import { ip } from './Home_QRCode';
-import socket from "../utils/socket";
-import Toast  from 'react-native-toast-message';
+import {ip} from './Home_QRCode';
+import socket from '../utils/socket';
+import Toast from 'react-native-toast-message';
 
-
-
-const fetchParticipant = async (participantId) => {
+const fetchParticipant = async participantId => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("fetchParticipant",{id:participantId,serverSecretCode});
-    socket.on("participantData", (participant) => {
+    socket.emit('fetchParticipant', {id: participantId, serverSecretCode});
+    socket.on('participantData', participant => {
       resolve(participant);
     });
-    socket.on("connect_error", (error) => {
+    socket.on('connect_error', error => {
       reject(error);
       socket.removeListener();
     });
   });
 };
 
-const handleSocket = async (judge,eventId,participantId,scoreData ) => {
+const handleSocket = async (
+  judge,
+  eventId,
+  judgeType,
+  participantId,
+  scoreData,
+) => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("add-score", {
+    socket.emit('add-score', {
       username: judge,
       eventId: eventId,
+      type: judgeType,
       participantId: participantId,
       scoreData: scoreData,
     });
-    socket.on("score-added", (score) => {
+    socket.on('score-added', score => {
       resolve(score);
     });
-    socket.on("connect_error", (error) => {
+    socket.on('connect_error', error => {
       reject(error);
       socket.removeListener();
     });
   });
 };
 
-
-const showError = (message) => {
+const showError = message => {
   Toast.show({
     type: 'error',
     text1: message,
@@ -63,7 +68,7 @@ const showError = (message) => {
   });
 };
 
-const showSuccess = (message) => {
+const showSuccess = message => {
   Toast.show({
     type: 'success',
     text1: message,
@@ -73,41 +78,42 @@ const showSuccess = (message) => {
   });
 };
 
+export default function ScoreParticipant({route, navigation}) {
+  const {eventId, judge, participantId, eventType} = route.params;
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [formData, setData] = useState({});
+  const [inputValue, setInputValue] = useState('');
+  const [participant, setParticipant] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [judgeTypes, setJudgeTypes] = useState(eventType);
+  const [judgeType, setJudgeType] = useState('');
 
-
-export default function ScoreParticipant({ route , navigation }) {
-  const { eventId, judge, participantId } = route.params;
-  const [formData, setData] = React.useState({});
-  const [inputValue, setInputValue] = React.useState('');
-  const [participant, setParticipant] = React.useState([]);
-  const [showConfirmation, setShowConfirmation] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-
-
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchParticipantData = async () => {
       try {
         const participantData = await fetchParticipant(participantId);
         console.log(participantData);
         setParticipant(participantData);
       } catch (error) {
-        console.error("Error setting participants:", error);
+        console.error('Error setting participants:', error);
       }
     };
 
     fetchParticipantData();
   }, []);
 
-
-
   const onSubmit = () => {
     setShowConfirmation(true);
   };
 
-
   const handleConfirmation = async () => {
     setShowConfirmation(false);
 
+    const refreshPage = async() => {
+      setRefreshKey(prevKey => prevKey + 1); // Update the refresh key to force a refresh
+    };
+    
     // Prepare the score data to send to the server
     const scoreData = parseFloat(inputValue);
 
@@ -123,20 +129,33 @@ export default function ScoreParticipant({ route , navigation }) {
     showSuccess('Score Added');
     setIsLoading(true);
 
-    setTimeout( async () => {
+    setTimeout(async () => {
       // Emit the score data to the server
       console.log(judge, eventId, participantId, scoreData);
-      await handleSocket(judge, eventId, participantId, scoreData);
+      await handleSocket(judge, eventId, judgeType, participantId, scoreData);
 
-      // Navigate back to the Participants Screen after emitting the score
-      setIsLoading(false);
-      
-      navigation.navigate('Participants', {
-        eventId: eventId,
-        judge: judge,
+      // Remove the scored type from judgeTypes
+      // Remove the scored type from judgeTypes
+      const updatedTypes = judgeTypes.filter(type => {
+        // Check if the judge type matches the current type
+        return type.name.toLowerCase() !== judgeType.toLowerCase();
       });
-    } , 3000
-    )
+      setJudgeTypes(updatedTypes);
+
+      // Check if it's the last card
+      if (updatedTypes.length === 0) {
+        // Navigate to the Participants Screen after emitting the score
+        await refreshPage();
+        setIsLoading(false);
+        navigation.navigate('Participants', {
+          eventId: eventId,
+          judge: judge,
+          refreshKey: refreshKey,
+        });
+      }
+      setIsLoading(false);
+      setInputValue('');
+    }, 3000);
   };
 
   const cancelConfirmation = () => {
@@ -144,145 +163,159 @@ export default function ScoreParticipant({ route , navigation }) {
   };
 
   return (
-    <NativeBaseProvider >
-      <Box alignItems="center" pt="4">
-        <Box //Top Card
-          maxW="80"
-          rounded="lg"
-          overflow="hidden"
-          borderColor="coolGray.200"
-          borderWidth="1"
-          _dark={{
-            borderColor: 'coolGray.600',
-            backgroundColor: 'gray.700',
-          }}
-          _web={{
-            shadow: 2,
-            borderWidth: 0,
-          }}
-          _light={{
-            backgroundColor: 'gray.50',
-          }}>
-          <Stack
-            alignItems="center" //Textbox
-            p="4"
-            space={3}>
-            <Stack space={2} alignItems="center">
-              <Heading size="md" ml="-1">
-                Participant 
-              </Heading>
-              <Text 
-                fontSize="xs"
-                _light={{
-                  color: 'violet.500',
-                }}
+    <NativeBaseProvider>
+      <ScrollView flex={1} contentContainerStyle={{flexGrow: 1}} mb="10">
+        <VStack flex={1} p={4}>
+          <Box display="flex" alignItems="center" mt={4}>
+            {judgeTypes.map(type => (
+              <Box
+                key={type.id}
+                maxW="100%"
+                rounded="lg"
+                overflow="hidden"
+                borderColor="coolGray.200"
+                borderWidth="1"
+                mt={2}
+                p={4}
                 _dark={{
-                  color: 'violet.400',
+                  borderColor: 'coolGray.600',
+                  backgroundColor: 'gray.700',
                 }}
-                fontWeight="500"
-                ml="-0.5"
-                mt="-1">
-                {`${participant.firstName} ${participant.lastName}`}
-              </Text>
-            </Stack>
-            <Text fontWeight="400" fontSize="8xl" >
-            {participant.generatedNumber}
-            </Text>
-            <HStack
-              alignItems="center"
-              space={4}
-              justifyContent="space-between"></HStack>
-          </Stack>
-        </Box>
-      </Box>
-
-      <Box //Form & Button
-        alignItems="center">
-        <VStack>
-          <FormControl isRequired>
-            <FormControl.Label
-              _text={{
-                bold: true,
-              }}>
-              Score
-            </FormControl.Label>
-            <Input
-              keyboardType="numeric"
-              maxLength={3}
-              placeholder="0-10"
-              onChangeText={value => {
-                setData({...formData, name: value});
-                setInputValue(value);
-              }}
-              value={inputValue}
-              width="20%"
-              size="2xl"
-            />
-            <FormControl.ErrorMessage
-              leftIcon={<WarningOutlineIcon size="xs" />}>
-              Error encountered.
-            </FormControl.ErrorMessage>
-          </FormControl>
-          <Button onPress={onSubmit} mt="5" colorScheme="red">
-            Submit
-          </Button>
-        </VStack>
-      </Box>
-      {showConfirmation && (
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          alignItems="center"
-          justifyContent="center"
-          bg="rgba(0, 0, 0, 0.6)"
-        >
-          <Box
-            bg="white"
-            p={4}
-            rounded="md"
-            shadow={4}
-            width="80%"
-            alignItems="center"
-          >
-            <Heading size="lg" mb={2}>
-              Confirm Score Submission
-            </Heading>
-            <Text mb={4}>Score: {inputValue}</Text>
-            <HStack justifyContent="center">
-              <Button onPress={cancelConfirmation} colorScheme="gray">
-                Cancel
-              </Button>
-              <Button
-                onPress={handleConfirmation}
-                colorScheme="red"
-                ml={2}
-              >
-                Submit
-              </Button>
-            </HStack>
+                _web={{
+                  shadow: 2,
+                  borderWidth: 0,
+                }}
+                _light={{
+                  backgroundColor: 'gray.50',
+                }}>
+                <Box alignItems="center">
+                  <Stack alignItems="center" p="4" space={3}>
+                    <Stack space={2} alignItems="center">
+                      <Heading size="md" ml="-1">
+                        Participant
+                      </Heading>
+                      <Text
+                        fontSize="xs"
+                        _light={{
+                          color: 'violet.500',
+                        }}
+                        _dark={{
+                          color: 'violet.400',
+                        }}
+                        fontWeight="500"
+                        ml="-0.5"
+                        mt="-1">
+                        {`${participant.firstName} ${participant.lastName}`}
+                      </Text>
+                    </Stack>
+                    <Text fontWeight="400" fontSize="8xl">
+                      {participant.generatedNumber}
+                    </Text>
+                    <HStack
+                      alignItems="center"
+                      space={4}
+                      justifyContent="space-between"></HStack>
+                  </Stack>
+                  <Text
+                    fontSize="md"
+                    _light={{
+                      color: 'violet.500',
+                    }}
+                    _dark={{
+                      color: 'violet.400',
+                    }}
+                    fontWeight="500"
+                    ml="-0.5"
+                    mt="-1">
+                    {type.name}
+                  </Text>
+                  <VStack>
+                    <FormControl isRequired>
+                      <FormControl.Label _text={{bold: true}}>
+                        Score
+                      </FormControl.Label>
+                      <Input
+                        keyboardType="numeric"
+                        maxLength={3}
+                        placeholder="0-10"
+                        onChangeText={value => {
+                          setData({...formData, name: value});
+                          setInputValue(value);
+                          setJudgeType(type.name);
+                        }}
+                        value={inputValue}
+                        width="75%"
+                        size="2xl"
+                      />
+                      <FormControl.ErrorMessage
+                        leftIcon={<WarningOutlineIcon size="xs" />}>
+                        Error encountered.
+                      </FormControl.ErrorMessage>
+                    </FormControl>
+                    <Button onPress={onSubmit} mt="5" colorScheme="red">
+                      Submit
+                    </Button>
+                  </VStack>
+                </Box>
+              </Box>
+            ))}
           </Box>
-        </Box>
-      )}
-      {isLoading && (
-        <Box
-          position="absolute"
-          top={0}
-          bottom={0}
-          left={0}
-          right={0}
-          bg="rgba(0, 0, 0, 0.5)"
-          justifyContent="center"
-          alignItems="center">
-          <Spinner color="white" />
-        </Box>
-      )}
-      <Toast
-        position='top'
-        bottomOffset={20}
-      />
+
+          {showConfirmation && (
+            <Box
+              position="absolute"
+              width="100%"
+              height="100%"
+              top={0}
+              alignItems="center"
+              justifyContent="center"
+              bg="rgba(0,0,0,0.5)">
+              <Box
+                bg="white"
+                padding={6}
+                borderRadius={8}
+                width="90%"
+                maxWidth={400}
+                alignItems="center">
+                <Text fontSize="lg" fontWeight="bold" mb={4}>
+                  Confirm Score Submission
+                </Text>
+                <Text mb={4}>
+                  Are you sure you want to submit the score {inputValue} for
+                  participant{' '}
+                  {`${participant.firstName} ${participant.lastName}`}?
+                </Text>
+                <HStack space={2}>
+                  <Button
+                    onPress={handleConfirmation}
+                    colorScheme="green"
+                    isLoading={isLoading}
+                    loadingText="Submitting...">
+                    Yes
+                  </Button>
+                  <Button onPress={cancelConfirmation} colorScheme="red">
+                    No
+                  </Button>
+                </HStack>
+              </Box>
+            </Box>
+          )}
+          {isLoading && (
+            <Box
+              position="absolute"
+              top={0}
+              bottom={0}
+              left={0}
+              right={0}
+              bg="rgba(0, 0, 0, 0.5)"
+              justifyContent="center"
+              alignItems="center">
+              <Spinner color="white" />
+            </Box>
+          )}
+          <Toast position="top" bottomOffset={20} />
+        </VStack>
+      </ScrollView>
     </NativeBaseProvider>
   );
 }
