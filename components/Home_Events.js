@@ -16,8 +16,8 @@ import {BackHandler} from 'react-native';
 const fetchEvent = async judge => {
   return new Promise((resolve, reject) => {
     socket.initializeSocket(ip);
-    socket.emit("fetch-judge-events", {judge , serverSecretCode}); // Pass the converted competition ID to the server
-    socket.on("judgeEvents", (events) => {
+    socket.emit('fetch-judge-events', {judge, serverSecretCode}); // Pass the converted competition ID to the server
+    socket.on('judgeEvents', events => {
       resolve(events);
     });
     socket.on('connect_error', error => {
@@ -48,11 +48,9 @@ export default function Home_Events({navigation, route}) {
         const extractedEvents = eventsData?.events || [];
 
         setEvents(extractedEvents);
-        
       } catch (error) {
         console.error('Error setting events:', error);
       }
-
     };
 
     fetchEventData();
@@ -62,61 +60,66 @@ export default function Home_Events({navigation, route}) {
 
   return (
     <NativeBaseProvider>
-     <ScrollView flex={1} contentContainerStyle={{flexGrow: 1}} mb="20">
-      <HStack flexWrap="wrap" justifyContent="center" space="4">
-        {events.map(event => (
-          <Pressable
-            key={event.id}
-            pt="4"
-            onPress={() =>
-              navigation.navigate('Participants', {
-                eventId: event.id,
-                judge: judge,
-              })
-            }>
-            {({isHovered, isPressed}) => {
-              return (
-                <Box
-                  maxW="96"
-                  borderWidth="1"
-                  borderColor="coolGray.300"
-                  shadow="3"
-                  bg={
-                    isPressed
-                      ? 'coolGray.200'
-                      : isHovered
-                      ? 'coolGray.200'
-                      : 'coolGray.100'
-                  }
-                  p="5"
-                  rounded="8"
-                  style={{
-                    transform: [
-                      {
-                        scale: isPressed ? 0.96 : 1,
-                      },
-                    ],
-                  }}>
-                  <HStack alignItems="center">
+      <ScrollView flex={1} contentContainerStyle={{flexGrow: 1}} mb="20">
+        <Box textAlign="center">
+          <Text fontSize="2xl" color="blue.500" textAlign="center"  mb="15" mt="10">
+            Welcome Judge {judge}
+          </Text>
+        </Box>
+        <HStack flexWrap="wrap" justifyContent="center" space="4">
+          {events.map(event => (
+            <Pressable
+              key={event.id}
+              pt="4"
+              onPress={() =>
+                navigation.navigate('Participants', {
+                  eventId: event.id,
+                  judge: judge,
+                })
+              }>
+              {({isHovered, isPressed}) => {
+                return (
+                  <Box
+                    maxW="96"
+                    borderWidth="1"
+                    borderColor="coolGray.300"
+                    shadow="3"
+                    bg={
+                      isPressed
+                        ? 'coolGray.200'
+                        : isHovered
+                        ? 'coolGray.200'
+                        : 'coolGray.100'
+                    }
+                    p="5"
+                    rounded="8"
+                    style={{
+                      transform: [
+                        {
+                          scale: isPressed ? 0.96 : 1,
+                        },
+                      ],
+                    }}>
+                    <HStack alignItems="center">
+                      <Badge
+                        colorScheme="darkBlue"
+                        _text={{
+                          color: 'white',
+                        }}
+                        variant="solid"
+                        rounded="4">
+                        {`Time: ${event.startTime}-${event.endTime}`}
+                      </Badge>
+                    </HStack>
+                    <Text
+                      color="coolGray.800"
+                      mt="3"
+                      fontWeight="medium"
+                      fontSize="xl">
+                      {event.name}
+                    </Text>
+
                     <Badge
-                      colorScheme="darkBlue"
-                      _text={{
-                        color: 'white',
-                      }}
-                      variant="solid"
-                      rounded="4">
-                      {`Time: ${event.startTime}-${event.endTime}`}
-                    </Badge>
-                  </HStack>
-                  <Text
-                    color="coolGray.800"
-                    mt="3"
-                    fontWeight="medium"
-                    fontSize="xl">
-                    {event.name}
-                  </Text>
-                  
-                  <Badge
                       colorScheme="lightBlue"
                       _text={{
                         color: 'white',
@@ -124,13 +127,13 @@ export default function Home_Events({navigation, route}) {
                       variant="solid"
                       rounded="2">
                       {event.type}
-                  </Badge>
-                </Box>
-              );
-            }}
-          </Pressable>
-        ))}
-      </HStack>
+                    </Badge>
+                  </Box>
+                );
+              }}
+            </Pressable>
+          ))}
+        </HStack>
       </ScrollView>
     </NativeBaseProvider>
   );
