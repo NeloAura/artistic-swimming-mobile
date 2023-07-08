@@ -153,10 +153,8 @@ export default function ScoreGroup({route, navigation}) {
         // Navigate to the Participants Screen after emitting the score
         await refreshPage();
         setIsLoading(false);
-        navigation.navigate('Participants', {
-          eventId: eventId,
+        navigation.navigate('Home_Events', {
           judge: judge,
-          refreshKey: refreshKey,
         });
       }
       setIsLoading(false);

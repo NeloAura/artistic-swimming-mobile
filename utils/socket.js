@@ -7,7 +7,7 @@ class Ssocket{
     initializeSocket = async (SOCKET_IP) => {
         try {
 
-            this.socket = io(`http://${SOCKET_IP}:3000`, {
+            this.socket = io(`http://${SOCKET_IP}:3001`, {
                 transports: ['websocket']
             })
             // console.log("initializing socket", this.socket)
