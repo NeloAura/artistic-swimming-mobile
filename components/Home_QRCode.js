@@ -102,7 +102,7 @@ export default function Home_QRCode ({navigation}) {
           judge = username;
 
           WifiManager.setEnabled(true);
-          await WifiManager.connectToProtectedSSID(ssid, password, true);
+          await WifiManager.connectToProtectedSSID(ssid, password, true , false);
           setConnected(true);
           
           const decryptedPassword = CryptoJS.AES.decrypt(
